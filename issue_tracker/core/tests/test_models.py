@@ -1,13 +1,13 @@
 """
  Test for models.
 """
-#from decimal import Decimal
-#from unittest.mock import patch
+# from decimal import Decimal
+# from unittest.mock import patch
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-#from core import models
+from core import models
 
 
 def create_user(email='user@example.com', password='testpass123'):
@@ -57,4 +57,65 @@ class ModelTests(TestCase):
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
 
-    
+    def test_create_project(self):
+        """Test creating a project"""
+        user = create_user()
+        user1 = create_user(email='user1@example.com')
+        user2 = create_user(email='user2@example.com')
+        project = models.Project.objects.create(
+            created_by=user,
+            name='Sample Project name',
+            description='Sample description',
+        )
+
+        project.members.set([user, user2])
+
+        self.assertEqual(str(project), project.name)
+        self.assertIn(user2, project.members.all())
+        self.assertNotIn(user1, project.members.all())
+
+    def test_create_issue(self):
+        """Test creating an issue"""
+        user = create_user()
+        user1 = create_user(email='user1@example.com')
+
+        issue = models.Issue.objects.create(
+            created_by=user,
+            title='Sample Issue title',
+            description='Sample description',
+            assigned_to=user1,
+            status='New',
+        )
+
+        self.assertEqual(str(issue), issue.title)
+        self.assertEqual(user1, issue.assigned_to)
+
+    def test_create_comment(self):
+        """Test creating a comment"""
+        user = create_user()
+
+        issue = models.Issue.objects.create(
+            created_by=user,
+            title='Sample Issue title',
+            description='Sample description',
+            assigned_to=user,
+        )
+
+        comment = models.Comment.objects.create(
+            created_by=user,
+            text='Sample comment',
+            issue=issue,
+        )
+
+        self.assertEqual(
+            str(comment),
+            f"Comment by {user.email} on {issue.title}",
+        )
+
+    def test_create_label(self):
+        """Test creating a label"""
+        label = models.Label.objects.create(
+            name='Sample label',
+        )
+
+        self.assertEqual(str(label), label.name)
