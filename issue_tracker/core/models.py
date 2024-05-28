@@ -57,8 +57,9 @@ class Project(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     members = models.ManyToManyField(
-        'User',
-        related_name='projects_participated'
+        settings.AUTH_USER_MODEL,
+        related_name='projects_participated',
+        default=[],
     )
 
     def __str__(self) -> str:
@@ -66,7 +67,7 @@ class Project(models.Model):
 
 
 class Label(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
@@ -115,6 +116,9 @@ class Issue(models.Model):
         Label,
         related_name='issues',
         blank=True,
+    )
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name='issues', default=None
     )
     due_date = models.DateField(null=True, blank=True)
 

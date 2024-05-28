@@ -78,6 +78,11 @@ class ModelTests(TestCase):
         """Test creating an issue"""
         user = create_user()
         user1 = create_user(email='user1@example.com')
+        project = models.Project.objects.create(
+            created_by=user,
+            name='Sample Project name',
+            description='Sample description',
+        )
 
         issue = models.Issue.objects.create(
             created_by=user,
@@ -85,6 +90,7 @@ class ModelTests(TestCase):
             description='Sample description',
             assigned_to=user1,
             status='New',
+            project=project,
         )
 
         self.assertEqual(str(issue), issue.title)
@@ -93,12 +99,17 @@ class ModelTests(TestCase):
     def test_create_comment(self):
         """Test creating a comment"""
         user = create_user()
-
+        project = models.Project.objects.create(
+            created_by=user,
+            name='Sample Project name',
+            description='Sample description',
+        )
         issue = models.Issue.objects.create(
             created_by=user,
             title='Sample Issue title',
             description='Sample description',
             assigned_to=user,
+            project=project,
         )
 
         comment = models.Comment.objects.create(
