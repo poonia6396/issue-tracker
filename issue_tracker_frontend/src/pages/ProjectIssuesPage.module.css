@@ -1,0 +1,35 @@
+.container {
+  padding: 20px;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.issueList {
+  list-style: none;
+  padding: 0;
+}
+
+.issueItem {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.createIssueButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.createIssueButton:hover {
+  background-color: #0056b3;
+}
