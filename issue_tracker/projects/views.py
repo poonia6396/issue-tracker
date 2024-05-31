@@ -62,16 +62,16 @@ class ProjectViewSet(viewsets.ModelViewSet):
             url_name='add_member')
     def add_member(self, request, pk=None):
         project = self.get_object()
-        user_id = request.data.get('user_id')
+        email = request.data.get('email')
         role = request.data.get('role')
 
-        if not user_id or not role:
+        if not email or not role:
             return Response(
-                {"detail": "User ID and role are required."},
+                {"detail": "User email and role are required."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        user = get_object_or_404(get_user_model, id=user_id)
+        user = get_object_or_404(get_user_model(), email=email)
         ProjectMembership.objects.create(user=user, project=project, role=role)
         return Response(
             {"message": "Member added successfully"},
@@ -84,14 +84,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
             url_name='remove_member')
     def remove_member(self, request, pk=None):
         project = self.get_object()
-        user_id = request.data.get('user_id')
-        if not user_id:
+        email = request.data.get('email')
+        if not email:
             return Response(
-                {"detail": "User ID is required."},
+                {"detail": "User email is required."},
                 status=status.HTTP_400_BAD_REQUEST
             )
         try:
-            user = get_user_model().objects.get(id=user_id)
+            user = get_user_model().objects.get(email=email)
         except get_user_model().DoesNotExist:
             return Response(
                 {"detail": "No User matches the given query."},

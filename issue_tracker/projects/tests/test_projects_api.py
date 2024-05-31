@@ -121,6 +121,7 @@ class ProjectMembersAPITest(APITestCase):
         url = project_members_url(self.project.id, 'members')
 
         response = self.client.get(url)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['user'], self.user1.id)
@@ -130,7 +131,7 @@ class ProjectMembersAPITest(APITestCase):
         url = project_members_url(self.project.id, 'add_member')
 
         data = {
-            'user_id': self.user2.id,
+            'email': self.user2.email,
             'role': 'developer'
         }
         response = self.client.post(url, data)
@@ -148,7 +149,7 @@ class ProjectMembersAPITest(APITestCase):
         url = project_members_url(self.project.id, 'remove_member')
 
         data = {
-            'user_id': self.user3.id
+            'email': self.user3.email
         }
         response = self.client.delete(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -161,7 +162,7 @@ class ProjectMembersAPITest(APITestCase):
         url = project_members_url(self.project.id, 'add_member')
 
         data = {
-            'user_id': 9999,  # Non-existent user ID
+            'email': 'abc@cde.com',  # Non-existent user ID
             'role': 'developer'
         }
         response = self.client.post(url, data)
@@ -172,7 +173,7 @@ class ProjectMembersAPITest(APITestCase):
         url = project_members_url(self.project.id, 'remove_member')
 
         data = {
-            'user_id': 9999  # Non-existent user ID
+            'email': 'abc.com'  # Non-existent user ID
         }
         response = self.client.delete(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
