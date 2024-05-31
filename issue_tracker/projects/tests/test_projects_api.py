@@ -10,6 +10,7 @@ from core.models import (
     Project,
     Issue,
     Label,
+    ProjectMembership
 )
 from core.tests.utils import (
     create_issue, create_user, create_project
@@ -20,6 +21,11 @@ from projects.serializers import (
 )
 
 from issues.serializers import IssueDetailSerializer
+
+
+def project_members_url(project_id, action):
+    """Create and return an project members URL."""
+    return reverse('projects:project-'+action, args=[project_id])
 
 
 def detail_url(project_id):
@@ -92,51 +98,84 @@ class PrivateProjectApiTests(APITestCase):
             self.assertEqual(getattr(project, k), v)
         self.assertEqual(project.created_by, self.user)
 
-    def test_create_project_with_members(self):
-        """Test creating a project with new members."""
-        user1 = create_user(email='user1@example.com')
-        payload = {
-            'name': 'Sample project Name',
-            'description': 'Sample description',
-            'member_ids': [self.user.id, user1.id],
+
+class ProjectMembersAPITest(APITestCase):
+    """Test members api for the projects"""
+
+    def setUp(self):
+        
+        # Create users
+        self.user1 = create_user(email='user1@example.com')
+        self.user2 = create_user(email='user2@example.com')
+        self.user3 = create_user(email='user3@example.com')
+        # Create a project
+        self.project = create_project(user=self.user1)
+        self.client.force_authenticate(user=self.user1)
+        # Create ProjectMembership
+        self.membership = ProjectMembership.objects.create(
+            user=self.user1, project=self.project, role='owner'
+        )
+
+    def test_list_project_members(self):
+        """Test listing project members"""
+        url = project_members_url(self.project.id, 'members')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['user'], self.user1.id)
+
+    def test_add_project_member(self):
+        """Test adding project members"""
+        url = project_members_url(self.project.id, 'add_member')
+
+        data = {
+            'user_id': self.user2.id,
+            'role': 'developer'
         }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(ProjectMembership.objects.filter(
+            user=self.user2, project=self.project).exists()
+        )
 
-        res = self.client.post(PROJECTS_URL, payload, format='json')
+    def test_remove_project_member(self):
+        """Test removing project member"""
+        ProjectMembership.objects.create(
+            user=self.user3, project=self.project, role='developer'
+        )
 
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        projects = Project.objects.filter(created_by=self.user)
-        self.assertEqual(projects.count(), 1)
-        project = projects[0]
-        self.assertEqual(project.members.count(), 2)
-        for member_id in payload['member_ids']:
-            exists = project.members.filter(
-                id=member_id,
-            ).exists()
-            self.assertTrue(exists)
+        url = project_members_url(self.project.id, 'remove_member')
 
-    def test_add_members_to_existing_project(self):
-        """Test adding members to existing project."""
-        project = create_project(user=self.user)
-        user1 = create_user(email='user1@example.com')
-        payload = {'member_ids': [user1.id]}
-        url = detail_url(project.id)
-        res = self.client.patch(url, payload, format='json')
+        data = {
+            'user_id': self.user3.id
+        }
+        response = self.client.delete(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(ProjectMembership.objects.filter(
+            user=self.user3, project=self.project).exists()
+        )
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertIn(user1, project.members.all())
+    def test_add_member_invalid_user(self):
+        """Test adding an invalid member to project"""
+        url = project_members_url(self.project.id, 'add_member')
 
-    def test_update_members_of_existing_project(self):
-        """Test update members of existing project."""
-        project = create_project(user=self.user)
-        user1 = create_user(email='user1@example.com')
-        project.members.add(user1)
-        payload = {'member_ids': [self.user.id]}
-        url = detail_url(project.id)
-        res = self.client.patch(url, payload, format='json')
-        project.refresh_from_db()
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertNotIn(user1, project.members.all())
-        self.assertIn(self.user, project.members.all())
+        data = {
+            'user_id': 9999,  # Non-existent user ID
+            'role': 'developer'
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_remove_member_invalid_user(self):
+        """Test removing an invalid member to project"""
+        url = project_members_url(self.project.id, 'remove_member')
+
+        data = {
+            'user_id': 9999  # Non-existent user ID
+        }
+        response = self.client.delete(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class ProjectIssuesAPITest(APITestCase):

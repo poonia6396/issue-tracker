@@ -56,14 +56,18 @@ class Project(models.Model):
     )
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    members = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name='projects_participated',
-        default=[],
-    )
 
     def __str__(self) -> str:
         return self.name
+
+
+class ProjectMembership(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    role = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return f"{self.user.email} is a member of {self.project.name}"
 
 
 class Label(models.Model):

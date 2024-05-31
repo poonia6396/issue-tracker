@@ -60,19 +60,36 @@ class ModelTests(TestCase):
     def test_create_project(self):
         """Test creating a project"""
         user = create_user()
-        user1 = create_user(email='user1@example.com')
-        user2 = create_user(email='user2@example.com')
         project = models.Project.objects.create(
             created_by=user,
             name='Sample Project name',
             description='Sample description',
         )
 
-        project.members.set([user, user2])
+        self.assertEqual(str(project), 'Sample Project name')
+        self.assertEqual(project.description, 'Sample description')
+        self.assertEqual(project.created_by, user)
 
-        self.assertEqual(str(project), project.name)
-        self.assertIn(user2, project.members.all())
-        self.assertNotIn(user1, project.members.all())
+    def test_create_project_membership(self):
+        """Test creating a project membership"""
+        user1 = create_user(email='user1@example.com')
+        user2 = create_user(email='user2@example.com')
+        project = models.Project.objects.create(
+            name='Project 1',
+            description='A test project description',
+            created_by=user1
+        )
+        membership = models.ProjectMembership.objects.create(
+            user=user2,
+            project=project,
+            role='developer'
+        )
+        self.assertEqual(membership.user, user2)
+        self.assertEqual(membership.project, project)
+        self.assertEqual(membership.role, 'developer')
+        self.assertEqual(
+            str(membership), f'{user2.email} is a member of {project.name}'
+        )
 
     def test_create_issue(self):
         """Test creating an issue"""
