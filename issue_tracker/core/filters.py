@@ -26,7 +26,10 @@ class IssueFilter(filters.FilterSet):
     assigned_to = NumberInFilter(
         field_name='assigned_to__id', lookup_expr='in'
     )
+    created_by = NumberInFilter(
+        field_name='created_by__id', lookup_expr='in'
+    )
 
     class Meta:
         model = Issue
-        fields = ['labels', 'assigned_to']
+        fields = ['labels', 'assigned_to', 'created_by']

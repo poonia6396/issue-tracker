@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['email', 'password', 'name']
+        fields = ['id', 'email', 'password', 'name']
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
     def create(self, validated_data):
@@ -59,18 +59,3 @@ class AuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
-
-
-class InviteUserSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    role = serializers.ChoiceField(
-        choices=[('admin', 'Admin'), ('member', 'Member')]
-    )
-
-    def validate_email(self, value):
-        # Check if the user already exists
-        if not get_user_model().objects.filter(email=value).exists():
-            raise serializers.ValidationError(
-                "User with this email does not exist."
-            )
-        return value

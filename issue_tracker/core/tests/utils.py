@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
 from core.models import (
     Project,
-    Issue
+    Issue,
+    ProjectMembership
 )
 
 
@@ -16,6 +17,9 @@ def create_project(user, **params):
     defaults.update(**params)
 
     project = Project.objects.create(created_by=user, **defaults)
+    ProjectMembership.objects.create(
+            user=user, project=project, role='admin'
+    )
     return project
 
 

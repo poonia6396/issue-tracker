@@ -22,7 +22,7 @@ from projects.serializers import (
     ProjectMembershipSerializer,
 )
 from issues.serializers import IssueDetailSerializer
-from core.filters import IssueFilter, ProjectFilter
+from core.filters import IssueFilter
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -30,15 +30,30 @@ class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectDetailSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    filter_class = ProjectFilter
+
+    def _params_to_ints(self, qs):
+        """Convert a list of strings to integers."""
+        return [int(str_id) for str_id in qs.split(',')]
 
     def perform_create(self, serializer):
         """Create the project object"""
-        serializer.save(created_by=self.request.user)
+        project = serializer.save(created_by=self.request.user)
+        ProjectMembership.objects.create(
+            user=self.request.user,
+            project=project,
+            role='admin'
+        )
 
     def get_queryset(self):
         """Retrieve projects for authenticated user."""
-        return self.queryset.order_by('-id')
+        queryset = self.queryset
+        user = self.request.user
+
+        queryset = queryset.filter(
+            project_members__user__id=user.id
+        )
+
+        return queryset.order_by('-id')
 
     def get_serializer_class(self):
         """Return the serializer class for request."""

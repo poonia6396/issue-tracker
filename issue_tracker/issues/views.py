@@ -18,10 +18,7 @@ from issues.permissions import IsReporterOrReadOnly
 from core.filters import IssueFilter
 
 
-class IssueViewSet(mixins.DestroyModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   viewsets.GenericViewSet,):
+class IssueViewSet(viewsets.ModelViewSet):
     """View for manage recipe APIs."""
     serializer_class = IssueDetailSerializer
     queryset = Issue.objects.all()
@@ -49,6 +46,10 @@ class IssueViewSet(mixins.DestroyModelMixin,
     def get_queryset(self):
         """Retrieve issues for authenticated user."""
         queryset = self.queryset
+        user = self.request.user
+        queryset = queryset.filter(
+            created_by__id=user.id
+        )
         return queryset.order_by('-id')
 
     @action(methods=['GET', 'POST'], detail=True, url_path='comments')
@@ -75,6 +76,14 @@ class IssueViewSet(mixins.DestroyModelMixin,
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+    @action(detail=False, methods=['GET'], url_path='assigned')
+    def assigned(self, request):
+        """Fetch issues assigned to the authenticated user"""
+        user = self.request.user
+        assigned_issues = self.queryset.filter(assigned_to=user)
+        serializer = self.get_serializer(assigned_issues, many=True)
+        return Response(serializer.data)
 
 
 class CommentViewSet(mixins.DestroyModelMixin,

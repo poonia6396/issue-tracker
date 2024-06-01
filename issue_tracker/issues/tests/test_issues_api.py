@@ -15,6 +15,7 @@ from core.tests.utils import (
 )
 
 from issues.serializers import (
+    IssueSerializer,
     IssueDetailSerializer,
 )
 
@@ -46,6 +47,26 @@ class PrivateIssueApiTests(APITestCase):
         self.user = create_user()
         self.project = create_project(user=self.user)
         self.client.force_authenticate(self.user)
+
+    def test_retrieve_issues(self):
+        """Test retrieving issues"""
+        user2 = create_user(email='user1@example.com')
+        issue1 = create_issue(user=self.user, project=self.project)
+        issue2 = create_issue(user=self.user, project=self.project)
+        issue3 = create_issue(user=user2, project=self.project)
+
+        url = reverse('issues:issue-list')
+
+        res = self.client.get(url)
+
+        s1 = IssueSerializer(issue1)
+        s2 = IssueSerializer(issue2)
+        s3 = IssueSerializer(issue3)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn(s1.data, res.data)
+        self.assertIn(s2.data, res.data)
+        self.assertNotIn(s3.data, res.data)
 
     def test_get_issue_detail(self):
         """Test get issue detail."""
@@ -128,3 +149,32 @@ class IssueCommentsAPITest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn(comment, issue_comments)
+
+
+class IssueAssignedAPITest(APITestCase):
+    def setUp(self):
+        self.user = create_user()
+        self.user1 = create_user(email='user1@example.com')
+        self.client.force_authenticate(user=self.user)
+
+        self.project = create_project(user=self.user)
+
+        # Create issues, some assigned to user, some not
+        self.issue1 = create_issue(
+            user=self.user, project=self.project, title='Issue1'
+        )
+        self.issue2 = create_issue(
+            user=self.user, project=self.project, title='Issue2'
+        )
+        self.issue3 = create_issue(user=self.user1, project=self.project)
+
+    def test_get_assigned_issues(self):
+        """Test retrieving issues assigned to the authenticated user"""
+        url = reverse('issues:issue-assigned')
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['title'], self.issue1.title)
+        self.assertEqual(response.data[1]['title'], self.issue2.title)
