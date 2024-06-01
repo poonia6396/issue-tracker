@@ -39,6 +39,10 @@ const ProjectIssuesPage: React.FC = () => {
     navigate(`/project/${projectId}/issues/create`);
   };
 
+  const handleIssueClick = (issueId: number) => {
+    navigate(`/issue/${issueId}`);
+  };
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Issues for {projectName}</h1>
@@ -47,8 +51,12 @@ const ProjectIssuesPage: React.FC = () => {
       </button>
       <ul className={styles.issueList}>
         {issues.map((issue) => (
-          <li key={issue.id} className={styles.issueItem}>
-            <h2>{issue.title}</h2>
+          <li
+            key={issue.id}
+            className={styles.issueItem}
+            onClick={() => handleIssueClick(issue.id)}
+          >
+            <h2 className={styles.issueTitle}>{issue.title}</h2>
             <p>{issue.description}</p>
           </li>
         ))}

@@ -9,6 +9,10 @@ export const getProjects = () => {
   return axiosInstance.get(`/projects/projects/`);
 };
 
+export const getProject = (projectId: number) => {
+  return axiosInstance.get(`/projects/projects/${projectId}`);
+};
+
 export const createProject = (project: { name: string }) => {
   return axiosInstance.post(`/projects/projects/`, project);
 };
@@ -39,4 +43,24 @@ export const getUsers = () => {
 
 export const createUser = (user: { email: string }) => {
   return axiosInstance.post('/user/create/', user);
+};
+
+export const getProjectMembers = (projectId: number) => {
+  return axiosInstance.get(`/projects/projects/${projectId}/members`);
+};
+
+export const addProjectMember = (projectId: number, data: { email: string; role: string }) => {
+  return axiosInstance.post(`/projects/projects/${projectId}/members/add/`, data);
+};
+
+export const removeProjectMember = (projectId: number, data: { email: string }) => {
+  return axiosInstance.delete(`/projects/projects/${projectId}/members/remove`, {data: data});
+};
+
+export const getIssuesCreatedBy = (userId: number) => {
+  return axiosInstance.get('/issues/', { params: { createdBy: userId } });
+};
+
+export const getIssuesAssignedTo = (userId: number) => {
+  return axiosInstance.get('/issues/', { params: { assignedTo: userId } });
 };

@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { getUsers, createUser } from "../api/api";
+import { getUsers } from "../api/api";
 import styles from "./AddMembersModal.module.css";
 
 interface AddMembersModalProps {
   onClose: () => void;
-  onAddMembers: (memberIds: number[]) => void;
+  onAddMember: (email: string, role: string) => void;
 }
 
 const AddMembersModal: React.FC<AddMembersModalProps> = ({
   onClose,
-  onAddMembers,
+  onAddMember,
 }) => {
   const [users, setUsers] = useState<{ id: number; email: string }[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
-  const [newUserEmail, setNewUserEmail] = useState("");
+  const [selectedEmail, setSelectedEmail] = useState("");
+  const [role, setRole] = useState("member");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -28,18 +28,10 @@ const AddMembersModal: React.FC<AddMembersModalProps> = ({
     fetchUsers();
   }, []);
 
-  const handleCreateUser = async () => {
-    try {
-      const response = await createUser({ email: newUserEmail });
-      setSelectedUsers([...selectedUsers, response.data.id]);
-      setNewUserEmail("");
-    } catch (error) {
-      console.error("Failed to create user", error);
+  const handleAdd = () => {
+    if (selectedEmail && role) {
+      onAddMember(selectedEmail, role);
     }
-  };
-
-  const handleSubmit = () => {
-    onAddMembers(selectedUsers);
   };
 
   return (
@@ -47,39 +39,38 @@ const AddMembersModal: React.FC<AddMembersModalProps> = ({
       <div className={styles.modalContent}>
         <h2>Add Members</h2>
         <div className={styles.formGroup}>
-          <label>Existing Users</label>
-          <select
-            multiple
-            onChange={(e) => {
-              const options = e.target.options;
-              const selected = [];
-              for (let i = 0; i < options.length; i++) {
-                if (options[i].selected) {
-                  selected.push(Number(options[i].value));
-                }
-              }
-              setSelectedUsers(selected);
-            }}
-          >
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.email}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className={styles.formGroup}>
-          <label>New User Email</label>
+          <label>Email</label>
           <input
             type="email"
-            value={newUserEmail}
-            onChange={(e) => setNewUserEmail(e.target.value)}
+            list="users"
+            value={selectedEmail}
+            onChange={(e) => setSelectedEmail(e.target.value)}
+            className={styles.input}
           />
-          <button onClick={handleCreateUser}>Add New User</button>
+          <datalist id="users">
+            {users.map((user) => (
+              <option key={user.id} value={user.email} />
+            ))}
+          </datalist>
+        </div>
+        <div className={styles.formGroup}>
+          <label>Role</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className={styles.select}
+          >
+            <option value="member">Member</option>
+            <option value="admin">Admin</option>
+          </select>
         </div>
         <div className={styles.formActions}>
-          <button onClick={onClose}>Cancel</button>
-          <button onClick={handleSubmit}>Add Members</button>
+          <button onClick={onClose} className={styles.cancelButton}>
+            Cancel
+          </button>
+          <button onClick={handleAdd} className={styles.addButton}>
+            Add
+          </button>
         </div>
       </div>
     </div>

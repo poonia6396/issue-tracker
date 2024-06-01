@@ -1,13 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance";
-import styles from "./ProjectDetailsPage.module.css";
+import { useParams } from "react-router-dom";
+import {
+  getProject,
+  getProjectMembers,
+  addProjectMember,
+  removeProjectMember,
+} from "../api/api";
 import AddMembersModal from "../components/AddMembersModal";
+import styles from "./ProjectDetailsPage.module.css";
+
+interface Member {
+  id: number;
+  user: number;
+  project: number;
+  role: string;
+  user_email: string;
+  project_name: string;
+}
 
 interface Project {
   id: number;
   name: string;
-  members: { id: number; email: string }[];
+  members: Member[];
 }
 
 const ProjectDetailsPage: React.FC = () => {
@@ -18,10 +32,9 @@ const ProjectDetailsPage: React.FC = () => {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const response = await axiosInstance.get(
-          `/projects/projects/${projectId}/`
-        );
-        setProject(response.data);
+        const projectResponse = await getProject(Number(projectId));
+        const membersResponse = await getProjectMembers(Number(projectId));
+        setProject({ ...projectResponse.data, members: membersResponse.data });
       } catch (error) {
         console.error("Failed to fetch project", error);
       }
@@ -30,18 +43,30 @@ const ProjectDetailsPage: React.FC = () => {
     fetchProject();
   }, [projectId]);
 
-  const handleAddMembers = async (memberIds: number[]) => {
+  const handleAddMembers = async (email: string, role: string) => {
     try {
-      await axiosInstance.patch(`/projects/projects/${projectId}/`, {
-        members: memberIds,
-      });
-      const response = await axiosInstance.get(
-        `/projects/projects/${projectId}/`
+      await addProjectMember(Number(projectId), { email, role });
+      const membersResponse = await getProjectMembers(Number(projectId));
+      setProject(
+        (prevProject) =>
+          prevProject && { ...prevProject, members: membersResponse.data }
       );
-      setProject(response.data);
       setIsModalOpen(false);
     } catch (error) {
-      console.error("Failed to add members", error);
+      console.error("Failed to add member", error);
+    }
+  };
+
+  const handleRemoveMember = async (email: string) => {
+    try {
+      await removeProjectMember(Number(projectId), { email: email });
+      const membersResponse = await getProjectMembers(Number(projectId));
+      setProject(
+        (prevProject) =>
+          prevProject && { ...prevProject, members: membersResponse.data }
+      );
+    } catch (error) {
+      console.error("Failed to remove member", error);
     }
   };
 
@@ -53,7 +78,15 @@ const ProjectDetailsPage: React.FC = () => {
           <h2>Members</h2>
           <ul>
             {project.members.map((member) => (
-              <li key={member.id}>{member.email}</li>
+              <li key={member.id}>
+                {member.user_email} - {member.role}
+                <button
+                  onClick={() => handleRemoveMember(member.user_email)}
+                  className={styles.removeButton}
+                >
+                  Remove
+                </button>
+              </li>
             ))}
           </ul>
           <button
@@ -65,7 +98,7 @@ const ProjectDetailsPage: React.FC = () => {
           {isModalOpen && (
             <AddMembersModal
               onClose={() => setIsModalOpen(false)}
-              onAddMembers={handleAddMembers}
+              onAddMember={handleAddMembers}
             />
           )}
         </>

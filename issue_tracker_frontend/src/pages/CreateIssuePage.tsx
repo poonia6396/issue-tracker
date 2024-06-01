@@ -12,7 +12,7 @@ const CreateIssuePage: React.FC = () => {
     title: string;
     description: string;
     assigned_to_id: number | null;
-    labels: string[];
+    labels: { name: string }[];
   }) => {
     try {
       await createIssue(issue, Number(projectId));
@@ -25,7 +25,10 @@ const CreateIssuePage: React.FC = () => {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Create Issue</h1>
-      <CreateIssueForm onSubmit={handleCreateIssue} />
+      <CreateIssueForm
+        onSubmit={handleCreateIssue}
+        projectId={Number(projectId)}
+      />
     </div>
   );
 };

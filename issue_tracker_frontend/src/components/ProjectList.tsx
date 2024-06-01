@@ -17,6 +17,9 @@ const ProjectList: React.FC<Props> = ({ projects }) => {
       {projects.map((project) => (
         <div key={project.id} className={styles.project}>
           <h2>{project.name}</h2>
+          <Link to={`/project/${project.id}`} className={styles.link}>
+            View Project Details
+          </Link>
           <Link to={`/project/${project.id}/issues`} className={styles.link}>
             View Issues
           </Link>

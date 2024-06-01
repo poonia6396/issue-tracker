@@ -1,0 +1,39 @@
+.container {
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .addButton {
+    margin-top: 10px;
+    padding: 8px 16px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .addButton:hover {
+    background-color: #0056b3;
+  }
+  
+  .removeButton {
+    margin-left: 10px;
+    padding: 4px 8px;
+    font-size: 14px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .removeButton:hover {
+    background-color: #c82333;
+  }
+  

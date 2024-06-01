@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getIssueDetails, getComments, addComment } from "../api/api";
 import { useParams } from "react-router-dom";
-import styles from "./IssueDetailsPage.module.css";
+import { Container, Card, Button, Form } from "react-bootstrap";
 
 interface Comment {
   id: number;
@@ -9,8 +9,22 @@ interface Comment {
 }
 
 interface Issue {
+  id: number;
   title: string;
   description: string;
+  created_by: {
+    email: string;
+    name: string;
+  };
+  assigned_to: {
+    email: string;
+    name: string;
+  };
+  status: string;
+  labels: { id: number; name: string }[];
+  priority: string;
+  updated_at: string;
+  due_date: string | null;
 }
 
 interface Params extends Record<string, string | undefined> {
@@ -55,33 +69,75 @@ const IssueDetailsPage: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <Container>
       {issue && (
         <>
-          <h1 className={styles.title}>{issue.title}</h1>
-          <p className={styles.description}>{issue.description}</p>
-          <div className={styles.comments}>
-            <h2>Comments</h2>
-            {comments.map((comment) => (
-              <div key={comment.id} className={styles.comment}>
-                {comment.text}
+          <Card>
+            <Card.Body>
+              <Card.Title>{issue.title}</Card.Title>
+              <Card.Text>{issue.description}</Card.Text>
+              <Card.Text>
+                Created by: {issue.created_by.name} ({issue.created_by.email})
+              </Card.Text>
+              <Card.Text>
+                Assigned to: {issue.assigned_to.name} ({issue.assigned_to.email}
+                )
+              </Card.Text>
+              <Card.Text>Status: {issue.status}</Card.Text>
+              <Card.Text>Priority: {issue.priority}</Card.Text>
+              <Card.Text>
+                Updated at: {new Date(issue.updated_at).toLocaleString()}
+              </Card.Text>
+              <Card.Text>
+                Due date:{" "}
+                {issue.due_date
+                  ? new Date(issue.due_date).toLocaleDateString()
+                  : "N/A"}
+              </Card.Text>
+              <div>
+                Labels:{" "}
+                {issue.labels.map((label) => (
+                  <span
+                    key={label.id}
+                    style={{
+                      marginRight: "5px",
+                      padding: "3px 7px",
+                      backgroundColor: "#007bff",
+                      color: "white",
+                      borderRadius: "3px",
+                    }}
+                  >
+                    {label.name}
+                  </span>
+                ))}
               </div>
+            </Card.Body>
+          </Card>
+          <div style={{ marginTop: "20px" }}>
+            <h5>Comments</h5>
+            {comments.map((comment) => (
+              <Card key={comment.id} style={{ marginBottom: "10px" }}>
+                <Card.Body>{comment.text}</Card.Body>
+              </Card>
             ))}
           </div>
-          <form onSubmit={handleCommentSubmit} className={styles.commentForm}>
-            <textarea
-              value={newComment}
-              onChange={handleCommentChange}
-              placeholder="Add a comment"
-              className={styles.textarea}
-            />
-            <button type="submit" className={styles.button}>
+          <Form onSubmit={handleCommentSubmit} style={{ marginTop: "20px" }}>
+            <Form.Group controlId="commentText">
+              <Form.Label>Add a Comment</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={newComment}
+                onChange={handleCommentChange}
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
               Add Comment
-            </button>
-          </form>
+            </Button>
+          </Form>
         </>
       )}
-    </div>
+    </Container>
   );
 };
 
