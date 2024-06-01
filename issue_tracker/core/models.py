@@ -63,7 +63,9 @@ class Project(models.Model):
 
 class ProjectMembership(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name='project_members'
+    )
     role = models.CharField(max_length=50)
 
     def __str__(self) -> str:

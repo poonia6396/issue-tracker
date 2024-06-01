@@ -98,6 +98,31 @@ class PrivateProjectApiTests(APITestCase):
             self.assertEqual(getattr(project, k), v)
         self.assertEqual(project.created_by, self.user)
 
+    def test_filter_by_members(self):
+        """Test filtering projects by member user."""
+        user1 = create_user(email='user1@example.com')
+        user2 = create_user(email='user2@example.com')
+        project1 = create_project(user=self.user)
+        ProjectMembership.objects.create(
+            user=user1, project=project1, role='member'
+        )
+        project2 = create_project(user=self.user)
+        ProjectMembership.objects.create(
+            user=user2, project=project2, role='member'
+        )
+        project3 = create_project(user=self.user)
+
+        params = {'member_ids': f'{user1.id},{user2.id}'}
+        url = PROJECTS_URL
+        res = self.client.get(url, params)
+        print(res.json())
+        s1 = ProjectSerializer(project1)
+        s2 = ProjectSerializer(project2)
+        s3 = ProjectSerializer(project3)
+        self.assertIn(s1.data, res.data)
+        self.assertIn(s2.data, res.data)
+        self.assertNotIn(s3.data, res.data)
+
 
 class ProjectMembersAPITest(APITestCase):
     """Test members api for the projects"""

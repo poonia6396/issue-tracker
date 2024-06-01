@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from core.models import Issue
+from core.models import Issue, Project
 
 
 class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
@@ -9,6 +9,16 @@ class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
 
 class CharInFilter(filters.BaseInFilter, filters.CharFilter):
     pass
+
+
+class ProjectFilter(filters.FilterSet):
+    member_ids = NumberInFilter(
+        field_name='project_members__user__id', lookup_expr='in'
+    )
+
+    class Meta:
+        model = Project
+        fields = ['member_ids']
 
 
 class IssueFilter(filters.FilterSet):

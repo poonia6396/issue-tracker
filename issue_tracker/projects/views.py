@@ -22,7 +22,7 @@ from projects.serializers import (
     ProjectMembershipSerializer,
 )
 from issues.serializers import IssueDetailSerializer
-from issues.filters import IssueFilter
+from core.filters import IssueFilter, ProjectFilter
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -30,6 +30,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectDetailSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    filter_class = ProjectFilter
 
     def perform_create(self, serializer):
         """Create the project object"""

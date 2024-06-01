@@ -15,7 +15,7 @@ from .serializers import (
     CommentSerializer,
 )
 from issues.permissions import IsReporterOrReadOnly
-from issues.filters import IssueFilter
+from core.filters import IssueFilter
 
 
 class IssueViewSet(mixins.DestroyModelMixin,
