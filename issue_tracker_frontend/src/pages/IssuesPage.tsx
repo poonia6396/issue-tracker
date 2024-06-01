@@ -1,33 +1,40 @@
 // src/pages/IssuesPage.tsx
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import { Tabs, Tab, Container, Row, Col } from "react-bootstrap";
 import { getIssuesCreatedBy, getIssuesAssignedTo } from "../api/api";
 import IssueContainer from "../components/IssueContainer";
+import { useUser } from "../contexts/UserContext";
+import { Issue } from "../interfaces/interfaces";
 
 const IssuesPage: React.FC = () => {
-  const { userId } = useParams<{ userId: string }>();
+  const { user } = useUser();
   const [key, setKey] = useState("createdBy");
-  const [createdByIssues, setCreatedByIssues] = useState([]);
-  const [assignedToIssues, setAssignedToIssues] = useState([]);
+  const [createdByIssues, setCreatedByIssues] = useState<Issue[]>([]);
+  const [assignedToIssues, setAssignedToIssues] = useState<Issue[]>([]);
 
   useEffect(() => {
     const fetchIssues = async () => {
-      try {
-        const createdByResponse = await getIssuesCreatedBy(Number(userId));
-        setCreatedByIssues(createdByResponse.data);
-        const assignedToResponse = await getIssuesAssignedTo(Number(userId));
-        setAssignedToIssues(assignedToResponse.data);
-      } catch (error) {
-        console.error("Failed to fetch issues", error);
+      if (user) {
+        try {
+          const createdByResponse = await getIssuesCreatedBy(Number(user.id));
+          setCreatedByIssues(createdByResponse.data);
+          const assignedToResponse = await getIssuesAssignedTo(Number(user.id));
+          setAssignedToIssues(assignedToResponse.data);
+        } catch (error) {
+          console.error("Failed to fetch issues", error);
+        }
       }
     };
     fetchIssues();
-  }, [userId]);
+  }, [user]);
 
   return (
     <Container>
-      <Tabs activeKey={key} onSelect={(k) => setKey(k)} className="mb-3">
+      <Tabs
+        activeKey={key as string}
+        onSelect={(k) => setKey(k as string)}
+        className="mb-3"
+      >
         <Tab eventKey="createdBy" title="Created by">
           <Row>
             {createdByIssues.map((issue) => (

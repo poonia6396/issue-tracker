@@ -1,11 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import styles from "./ProjectList.module.css";
-
-interface Project {
-  id: number;
-  name: string;
-}
+import { Project } from "../interfaces/interfaces";
 
 interface Props {
   projects: Project[];

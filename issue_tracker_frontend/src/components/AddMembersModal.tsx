@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { getUsers } from "../api/api";
+import React, { useState } from "react";
 import styles from "./AddMembersModal.module.css";
 
 interface AddMembersModalProps {
@@ -11,22 +10,9 @@ const AddMembersModal: React.FC<AddMembersModalProps> = ({
   onClose,
   onAddMember,
 }) => {
-  const [users, setUsers] = useState<{ id: number; email: string }[]>([]);
+  const [users] = useState<{ id: number; email: string }[]>([]);
   const [selectedEmail, setSelectedEmail] = useState("");
   const [role, setRole] = useState("member");
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await getUsers();
-        setUsers(response.data);
-      } catch (error) {
-        console.error("Failed to fetch users", error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
 
   const handleAdd = () => {
     if (selectedEmail && role) {

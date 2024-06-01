@@ -1,22 +1,27 @@
 // src/pages/ProjectsPage.tsx
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
+import { useUser } from "../contexts/UserContext";
 import { getProjectsForUser } from "../api/api";
+import { Project } from "../interfaces/interfaces";
 
 const ProjectsPage: React.FC = () => {
-  const [projects, setProjects] = useState([]);
+  const { user } = useUser();
+  const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
     const fetchProjects = async () => {
-      try {
-        const response = await getProjectsForUser();
-        setProjects(response.data);
-      } catch (error) {
-        console.error("Failed to fetch projects", error);
+      if (user) {
+        try {
+          const response = await getProjectsForUser(user.id);
+          setProjects(response.data);
+        } catch (error) {
+          console.error("Failed to fetch projects", error);
+        }
       }
     };
     fetchProjects();
-  }, []);
+  }, [user]);
 
   return (
     <Container>

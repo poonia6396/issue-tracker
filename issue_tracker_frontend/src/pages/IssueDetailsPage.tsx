@@ -2,30 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getIssueDetails, getComments, addComment } from "../api/api";
 import { useParams } from "react-router-dom";
 import { Container, Card, Button, Form } from "react-bootstrap";
-
-interface Comment {
-  id: number;
-  text: string;
-}
-
-interface Issue {
-  id: number;
-  title: string;
-  description: string;
-  created_by: {
-    email: string;
-    name: string;
-  };
-  assigned_to: {
-    email: string;
-    name: string;
-  };
-  status: string;
-  labels: { id: number; name: string }[];
-  priority: string;
-  updated_at: string;
-  due_date: string | null;
-}
+import { Issue, Comment } from "../interfaces/interfaces";
 
 interface Params extends Record<string, string | undefined> {
   issueId: string;

@@ -6,23 +6,9 @@ import {
   addProjectMember,
   removeProjectMember,
 } from "../api/api";
+import { Project } from "../interfaces/interfaces";
 import AddMembersModal from "../components/AddMembersModal";
 import styles from "./ProjectDetailsPage.module.css";
-
-interface Member {
-  id: number;
-  user: number;
-  project: number;
-  role: string;
-  user_email: string;
-  project_name: string;
-}
-
-interface Project {
-  id: number;
-  name: string;
-  members: Member[];
-}
 
 const ProjectDetailsPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();

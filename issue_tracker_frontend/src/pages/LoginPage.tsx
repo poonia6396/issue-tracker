@@ -1,30 +1,61 @@
-import React from "react";
+// src/pages/LoginPage.tsx
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../api/api";
-import LoginForm from "../components/LoginForm";
-import styles from "./LoginPage.module.css";
+import { loginUser, getUser } from "../api/api";
+import { useUser } from "../contexts/UserContext";
+import { Form, Button } from "react-bootstrap";
 
 const LoginPage: React.FC = () => {
-  const history = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { setUser } = useUser();
+  const navigate = useNavigate();
 
-  const handleLogin = async (credentials: {
-    email: string;
-    password: string;
-  }) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      debugger;
-      const response = await loginUser(credentials);
-      localStorage.setItem("token", response.data.token);
-      history("/dashboard");
+      const { token } = await loginUser(email, password);
+      localStorage.setItem("token", token);
+
+      const response = await getUser();
+      setUser(response.data);
+      // Store the token in localStorage or cookie if needed
+
+      navigate("/dashboard"); // or any other route
     } catch (error) {
       console.error("Login failed", error);
+      // Handle login error (e.g., show an error message)
     }
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Login</h1>
-      <LoginForm onLogin={handleLogin} />
+    <div className="login-container">
+      <h2>Login</h2>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="formBasicEmail">
+          <Form.Label>Email address</Form.Label>
+          <Form.Control
+            type="email"
+            placeholder="Enter email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group controlId="formBasicPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Form.Group>
+
+        <Button variant="primary" type="submit">
+          Login
+        </Button>
+      </Form>
     </div>
   );
 };

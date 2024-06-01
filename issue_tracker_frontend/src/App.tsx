@@ -16,6 +16,8 @@ import ProjectIssuesPage from "./pages/ProjectIssuesPage";
 import PrivateRoute from "./components/PrivateRoute";
 import CustomNavbar from "./components/CustomNavbar";
 import CustomBreadcrumbs from "./components/CustomBreadcrumbs";
+import ProjectsPage from "./pages/ProjectsPage";
+import IssuesPage from "./pages/IssuesPage";
 
 const App: React.FC = () => {
   return (
@@ -42,6 +44,14 @@ const App: React.FC = () => {
             }
           />
           <Route
+            path="/projects/"
+            element={
+              <PrivateRoute>
+                <ProjectsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/create-project"
             element={
               <PrivateRoute>
@@ -62,6 +72,14 @@ const App: React.FC = () => {
             element={
               <PrivateRoute>
                 <ProjectIssuesPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/issues/"
+            element={
+              <PrivateRoute>
+                <IssuesPage />
               </PrivateRoute>
             }
           />

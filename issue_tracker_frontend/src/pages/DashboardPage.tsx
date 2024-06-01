@@ -3,11 +3,7 @@ import { getProjects } from "../api/api";
 import ProjectList from "../components/ProjectList";
 import { Link } from "react-router-dom";
 import styles from "./DashboardPage.module.css";
-
-interface Project {
-  id: number;
-  name: string;
-}
+import { Project } from "../interfaces/interfaces";
 
 const DashboardPage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);

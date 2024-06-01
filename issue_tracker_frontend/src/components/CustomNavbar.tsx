@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom"; // Ensure you have AuthContext setup
 
@@ -19,8 +19,12 @@ const NavigationBar = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link onClick={handleHomeClick}>Home</Nav.Link>
-            {<Nav.Link href="/projects">Projects</Nav.Link>}
-            {<Nav.Link href="/issues">Issues</Nav.Link>}
+            {
+              <Nav.Link onClick={() => navigate("/projects")}>
+                Projects
+              </Nav.Link>
+            }
+            {<Nav.Link onClick={() => navigate("/issues")}>Issues</Nav.Link>}
           </Nav>
         </Navbar.Collapse>
       </Container>

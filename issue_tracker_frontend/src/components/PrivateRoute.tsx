@@ -1,21 +1,15 @@
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
-
-const isAuthenticated = (): boolean => {
-  return !!localStorage.getItem("token");
-};
+import { Navigate } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 
 interface PrivateRouteProps {
   children: React.ReactElement;
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
-  const location = useLocation();
-  return isAuthenticated() ? (
-    children
-  ) : (
-    <Navigate to="/login" state={{ from: location }} />
-  );
+  const { user } = useUser();
+
+  return user ? children : <Navigate to="/login" />;
 };
 
 export default PrivateRoute;
