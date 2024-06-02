@@ -23,6 +23,7 @@ from projects.serializers import (
 )
 from issues.serializers import IssueDetailSerializer
 from core.filters import IssueFilter
+from user.serializers import UserSerializer
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -67,9 +68,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
             url_path='members',
             url_name='members')
     def list_members(self, request, pk=None):
-        project = self.get_object()
-        members = ProjectMembership.objects.filter(project=project)
-        serializer = ProjectMembershipSerializer(members, many=True)
+        project = Project.objects.get(id=pk)
+        members = ProjectMembership.objects.filter(
+            project=project
+        ).values_list('user', flat=True)
+        users = get_user_model().objects.filter(id__in=members)
+        serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
     @action(detail=True,
@@ -77,7 +81,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             url_path='members/add',
             url_name='add_member')
     def add_member(self, request, pk=None):
-        project = self.get_object()
+        project = Project.objects.get(id=pk)
         email = request.data.get('email')
         role = request.data.get('role')
 
@@ -99,7 +103,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             url_path='members/remove',
             url_name='remove_member')
     def remove_member(self, request, pk=None):
-        project = self.get_object()
+        project = Project.objects.get(id=pk)
         email = request.data.get('email')
         if not email:
             return Response(

@@ -122,12 +122,10 @@ class ProjectMembersAPITest(APITestCase):
     def test_list_project_members(self):
         """Test listing project members"""
         url = project_members_url(self.project.id, 'members')
-
         response = self.client.get(url)
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['user'], self.user1.id)
+        self.assertEqual(response.data[0]['id'], self.user1.id)
 
     def test_add_project_member(self):
         """Test adding project members"""

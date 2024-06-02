@@ -139,7 +139,6 @@ class IssueCommentsAPITest(APITestCase):
         """Test creating a comments throug api"""
         url = issue_comment_url(self.issue.id)
         payload = {
-            'created_by': self.user.id,
             'text': 'Updated comment',
         }
         response = self.client.post(url, payload, format='json')

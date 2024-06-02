@@ -61,7 +61,6 @@ class IssueViewSet(viewsets.ModelViewSet):
             serializer = CommentSerializer(comments, many=True)
             return Response(serializer.data)
         elif request.method == 'POST':
-            request.data['created_by'] = self.request.user.id
             serializer = CommentSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save(

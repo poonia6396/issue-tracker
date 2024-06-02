@@ -15,7 +15,8 @@ class LabelSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-
+    created_by = UserSerializer(required=False)
+    
     class Meta:
         model = Comment
         fields = ['id', 'created_by', 'text', 'created_at']
@@ -81,5 +82,5 @@ class IssueDetailSerializer(IssueSerializer):
 
     class Meta(IssueSerializer.Meta):
         fields = IssueSerializer.Meta.fields + [
-            'description', 'priority', 'updated_at', 'due_date'
+            'description', 'priority', 'updated_at', 'due_date', 'created_at'
         ]
