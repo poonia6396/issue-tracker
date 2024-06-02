@@ -13,8 +13,8 @@ export const getProjects = () => {
   return axiosInstance.get(`/projects/projects/`);
 };
 
-export const getProjectsForUser = (userId: number) => {
-  return axiosInstance.get('/projects/projects/', { params: { memberId: userId } });
+export const getProjectsForUser = () => {
+  return axiosInstance.get('/projects/projects/');
 };
 
 export const getProject = (projectId: number) => {
@@ -33,16 +33,24 @@ export const getIssuesForProject = (projectId: number) => {
   return axiosInstance.get(`/projects/projects/${projectId}/issues/`);
 };
 
-export const getIssuesCreatedBy = (userId: number) => {
-  return axiosInstance.get('/issues/issues/', { params: { createdBy: userId } });
+export const getIssuesCreatedBy = () => {
+  return axiosInstance.get('/issues/issues/');
 };
 
-export const getIssuesAssignedTo = (userId: number) => {
-  return axiosInstance.get('/issues/issues/', { params: { assignedTo: userId } });
+export const getIssuesAssignedTo = () => {
+  return axiosInstance.get('/issues/issues/assigned');
 };
 
 export const getIssueDetails = (issueId: number) => {
   return axiosInstance.get(`/issues/issues/${issueId}/`);
+};
+
+export const updateIssueLabels = (issueId: number, data: { labels: { name: string }[] }) => {
+  return axiosInstance.patch(`/issues/issues/${issueId}/`, data);
+};
+
+export const updateIssueAssignee = (issueId: number, data: { assigned_to_id: number | null }) => {
+  return axiosInstance.patch(`/issues/issues/${issueId}/`, data);
 };
 
 export const getComments = (issueId: number) => {
@@ -51,6 +59,14 @@ export const getComments = (issueId: number) => {
 
 export const addComment = (issueId: number, comment: { text: string }) => {
   return axiosInstance.post(`/issues/issues/${issueId}/comments/`, comment);
+};
+
+export const updateComment = async (commentId: number, data: { text: string }) => {
+  return axiosInstance.patch(`/issues/comments/${commentId}/`, data);
+};
+
+export const deleteComment = async (commentId: number) => {
+  return axiosInstance.delete(`/issues/comments/${commentId}/`);
 };
 
 export const getUser = () => {

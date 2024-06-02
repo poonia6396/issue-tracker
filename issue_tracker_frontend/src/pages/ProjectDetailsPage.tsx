@@ -65,9 +65,9 @@ const ProjectDetailsPage: React.FC = () => {
           <ul>
             {project.members.map((member) => (
               <li key={member.id}>
-                {member.user_email} - {member.role}
+                {member.email}
                 <button
-                  onClick={() => handleRemoveMember(member.user_email)}
+                  onClick={() => handleRemoveMember(member.email)}
                   className={styles.removeButton}
                 >
                   Remove

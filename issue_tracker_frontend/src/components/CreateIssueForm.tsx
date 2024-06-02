@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { getProjectMembers } from "../api/api"; // Assuming you have an API to get the users
+import { getProjectMembers } from "../api/api";
+import { User } from "../interfaces/interfaces";
 import styles from "./CreateIssueForm.module.css";
 
 interface CreateIssueFormProps {
@@ -20,9 +21,7 @@ const CreateIssueForm: React.FC<CreateIssueFormProps> = ({
   const [description, setDescription] = useState("");
   const [assignedToId, setAssignedToId] = useState<number | null>(null);
   const [labels, setLabels] = useState<{ name: string }[]>([]); // Initialize with an empty array of objects
-  const [users, setUsers] = useState<{ user: number; user_email: string }[]>(
-    []
-  );
+  const [users, setUsers] = useState<User[]>([]);
   const [labelInput, setLabelInput] = useState("");
 
   useEffect(() => {
@@ -86,8 +85,8 @@ const CreateIssueForm: React.FC<CreateIssueFormProps> = ({
         >
           <option value="">Unassigned</option>
           {users.map((user) => (
-            <option key={user.user} value={user.user}>
-              {user.user_email}
+            <option key={user.id} value={user.id}>
+              {user.email}
             </option>
           ))}
         </select>

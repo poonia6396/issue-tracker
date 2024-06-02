@@ -1,8 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { getIssueDetails, getComments, addComment } from "../api/api";
+import {
+  getIssueDetails,
+  getComments,
+  addComment,
+  updateIssueLabels,
+  updateIssueAssignee,
+  getProjectMembers,
+  updateComment,
+  deleteComment,
+} from "../api/api";
 import { useParams } from "react-router-dom";
-import { Container, Card, Button, Form } from "react-bootstrap";
-import { Issue, Comment } from "../interfaces/interfaces";
+import { Container } from "react-bootstrap";
+import { User, Issue, Comment } from "../interfaces/interfaces";
+import IssueDetails from "../components/IssueDetails";
+import IssueSidePanel from "../components/IssueSidePanel";
+import CommentsSection from "../components/CommentsSection";
+import styles from "./IssueDetailsPage.module.css";
 
 interface Params extends Record<string, string | undefined> {
   issueId: string;
@@ -13,6 +26,9 @@ const IssueDetailsPage: React.FC = () => {
   const [issue, setIssue] = useState<Issue | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
+  const [newLabel, setNewLabel] = useState("");
+  const [projectMembers, setProjectMembers] = useState<User[]>([]);
+  const [newAssignee, setNewAssignee] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchIssueDetails = async () => {
@@ -25,9 +41,20 @@ const IssueDetailsPage: React.FC = () => {
       setComments(response.data);
     };
 
+    const fetchProjectMembers = async () => {
+      const projectId = 1; // You may need to get the projectId from the issue details or other context
+      const response = await getProjectMembers(projectId);
+      setProjectMembers(response.data);
+    };
+
     fetchIssueDetails();
     fetchComments();
+    fetchProjectMembers();
   }, [issueId]);
+
+  useEffect(() => {
+    setNewAssignee(issue?.assigned_to ?? null);
+  }, [issue]);
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewComment(e.target.value);
@@ -45,73 +72,107 @@ const IssueDetailsPage: React.FC = () => {
     }
   };
 
+  const handleEditComment = async (commentId: number, newText: string) => {
+    try {
+      await updateComment(commentId, { text: newText });
+      const updatedComments = comments.map((comment) =>
+        comment.id === commentId ? { ...comment, text: newText } : comment
+      );
+      setComments(updatedComments);
+    } catch (error) {
+      console.error("Edit comment failed", error);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    try {
+      await deleteComment(commentId);
+      const updatedComments = comments.filter(
+        (comment) => comment.id !== commentId
+      );
+      setComments(updatedComments);
+    } catch (error) {
+      console.error("Delete comment failed", error);
+    }
+  };
+  const handleAddLabel = async () => {
+    if (newLabel.trim() !== "") {
+      const updatedLabels = [
+        ...(issue?.labels || []),
+        { id: Date.now(), name: newLabel.trim() },
+      ];
+      try {
+        await updateIssueLabels(Number(issueId), {
+          labels: updatedLabels.map((label) => ({ name: label.name })),
+        });
+        setIssue((prevIssue) =>
+          prevIssue ? { ...prevIssue, labels: updatedLabels } : prevIssue
+        );
+        setNewLabel("");
+      } catch (error) {
+        console.error("Add label failed", error);
+      }
+    }
+  };
+
+  const handleRemoveLabel = async (labelId: number) => {
+    const updatedLabels =
+      issue?.labels.filter((label) => label.id !== labelId) || [];
+    try {
+      await updateIssueLabels(Number(issueId), {
+        labels: updatedLabels.map((label) => ({ name: label.name })),
+      });
+      setIssue((prevIssue) =>
+        prevIssue ? { ...prevIssue, labels: updatedLabels } : prevIssue
+      );
+    } catch (error) {
+      console.error("Remove label failed", error);
+    }
+  };
+
+  const handleAddAssignee = async () => {
+    if (newAssignee) {
+      try {
+        await updateIssueAssignee(Number(issueId), {
+          assigned_to_id: newAssignee.id,
+        });
+        setIssue((prevIssue) =>
+          prevIssue ? { ...prevIssue, assigned_to: newAssignee } : prevIssue
+        );
+      } catch (error) {
+        console.error("Add assignee failed", error);
+      }
+    }
+  };
+
   return (
-    <Container>
+    <Container className={styles.container}>
       {issue && (
         <>
-          <Card>
-            <Card.Body>
-              <Card.Title>{issue.title}</Card.Title>
-              <Card.Text>{issue.description}</Card.Text>
-              <Card.Text>
-                Created by: {issue.created_by.name} ({issue.created_by.email})
-              </Card.Text>
-              <Card.Text>
-                Assigned to: {issue.assigned_to.name} ({issue.assigned_to.email}
-                )
-              </Card.Text>
-              <Card.Text>Status: {issue.status}</Card.Text>
-              <Card.Text>Priority: {issue.priority}</Card.Text>
-              <Card.Text>
-                Updated at: {new Date(issue.updated_at).toLocaleString()}
-              </Card.Text>
-              <Card.Text>
-                Due date:{" "}
-                {issue.due_date
-                  ? new Date(issue.due_date).toLocaleDateString()
-                  : "N/A"}
-              </Card.Text>
-              <div>
-                Labels:{" "}
-                {issue.labels.map((label) => (
-                  <span
-                    key={label.id}
-                    style={{
-                      marginRight: "5px",
-                      padding: "3px 7px",
-                      backgroundColor: "#007bff",
-                      color: "white",
-                      borderRadius: "3px",
-                    }}
-                  >
-                    {label.name}
-                  </span>
-                ))}
-              </div>
-            </Card.Body>
-          </Card>
-          <div style={{ marginTop: "20px" }}>
-            <h5>Comments</h5>
-            {comments.map((comment) => (
-              <Card key={comment.id} style={{ marginBottom: "10px" }}>
-                <Card.Body>{comment.text}</Card.Body>
-              </Card>
-            ))}
+          <div className={styles.mainContent}>
+            <IssueDetails issue={issue} />
+            <CommentsSection
+              comments={comments}
+              newComment={newComment}
+              setNewComment={setNewComment}
+              handleCommentChange={handleCommentChange}
+              handleCommentSubmit={handleCommentSubmit}
+              handleEditComment={handleEditComment}
+              handleDeleteComment={handleDeleteComment}
+            />
           </div>
-          <Form onSubmit={handleCommentSubmit} style={{ marginTop: "20px" }}>
-            <Form.Group controlId="commentText">
-              <Form.Label>Add a Comment</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                value={newComment}
-                onChange={handleCommentChange}
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              Add Comment
-            </Button>
-          </Form>
+          <IssueSidePanel
+            labels={issue.labels}
+            newLabel={newLabel}
+            setNewLabel={setNewLabel}
+            handleAddLabel={handleAddLabel}
+            handleRemoveLabel={handleRemoveLabel}
+            projectMembers={projectMembers}
+            newAssignee={newAssignee}
+            setNewAssignee={setNewAssignee}
+            handleAddAssignee={handleAddAssignee}
+            issue={issue}
+          />
         </>
       )}
     </Container>
