@@ -24,25 +24,25 @@ Setting up Local Environment for Issue Tracker Project
 
 Step 1: Build Docker Image
 
-Go to the root directory of the repository.
+- Go to the root directory of the repository.
 
 `podman-compose build`
 
 Step 2: Start Docker Container
 
-Run the following command to start the Docker container.
+- Run the following command to start the Docker container.
 
 `podman-compose up`
 
-Starting Frontend Server
+## Starting Frontend Server
 
 Step 1: Navigate to Frontend Directory
 
-Navigate to the issue_tracker_frontend directory.
+- Navigate to the issue_tracker_frontend directory.
 
 Step 2: Install Required Libraries
 
-Run the following command to install all the required libraries.
+- Run the following command to install all the required libraries.
 
 `npm install`
 
