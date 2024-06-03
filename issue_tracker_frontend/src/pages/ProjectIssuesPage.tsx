@@ -1,6 +1,6 @@
 // src/pages/ProjectIssues.tsx
 import React, { useEffect, useState, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getIssuesForProject } from "../api/api";
 import IssueContainer from "../components/IssueContainer";
 import {
@@ -11,11 +11,13 @@ import {
   Dropdown,
   DropdownButton,
   Pagination,
+  Button,
 } from "react-bootstrap";
 import { Issue } from "../interfaces/interfaces";
 
 const ProjectIssues: React.FC = () => {
   const { projectId } = useParams();
+  const navigate = useNavigate();
   const [issues, setIssues] = useState<Issue[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("date");
@@ -65,11 +67,15 @@ const ProjectIssues: React.FC = () => {
   const currentItems = filteredIssues.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredIssues.length / itemsPerPage);
 
+  const handleCreateIssue = () => {
+    navigate(`/project/${projectId}/issues/create`);
+  };
+
   return (
     <Container className="py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h3">Project Issues</h1>
-        <Form className="d-flex">
+        <div className="d-flex">
           <Form.Control
             type="search"
             placeholder="Search issues..."
@@ -103,7 +109,8 @@ const ProjectIssues: React.FC = () => {
               Descending
             </Dropdown.Item>
           </DropdownButton>
-        </Form>
+          <Button onClick={handleCreateIssue}>Create Issue</Button>
+        </div>
       </div>
       <Row>
         {currentItems.map((issue) => (
