@@ -16,7 +16,7 @@ from issues.views import (
 app_name = 'issues'
 
 router = DefaultRouter()
-router.register('issues', IssueViewSet)
+router.register('', IssueViewSet)
 router.register('comments', CommentViewSet)
 
 

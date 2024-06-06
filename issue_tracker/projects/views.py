@@ -135,11 +135,11 @@ class ProjectIssuesViewSet(viewsets.ModelViewSet):
     filterset_class = IssueFilter
 
     def get_queryset(self):
-        project_pk = self.kwargs['project_pk']
-        return Issue.objects.filter(project_id=project_pk)
+        project_id = self.kwargs['project_id']
+        return Issue.objects.filter(project_id=project_id)
 
     def perform_create(self, serializer):
         """Create the issue object"""
-        project_pk = self.kwargs['project_pk']
-        project = Project.objects.get(id=project_pk)
+        project_id = self.kwargs['project_id']
+        project = Project.objects.get(id=project_id)
         serializer.save(project=project, created_by=self.request.user)

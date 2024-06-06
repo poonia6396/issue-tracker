@@ -8,7 +8,7 @@ from projects.views import ProjectViewSet, ProjectIssuesViewSet
 app_name = 'projects'
 
 router = DefaultRouter()
-router.register('projects', ProjectViewSet)
+router.register('', ProjectViewSet)
 
 project_issues_list = ProjectIssuesViewSet.as_view({
     'get': 'list',
@@ -18,7 +18,7 @@ project_issues_list = ProjectIssuesViewSet.as_view({
 urlpatterns = [
     path('', include(router.urls)),
     path(
-        'projects/<int:project_pk>/issues/',
+        '<int:project_id>/issues/',
         project_issues_list,
         name='project-issues'
     ),
