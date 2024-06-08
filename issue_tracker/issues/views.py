@@ -18,7 +18,11 @@ from issues.permissions import IsReporterOrReadOnly
 from core.filters import IssueFilter
 
 
-class IssueViewSet(viewsets.ModelViewSet):
+class IssueViewSet(mixins.DestroyModelMixin,
+                   mixins.ListModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.RetrieveModelMixin,
+                   viewsets.GenericViewSet,):
     """View for manage recipe APIs."""
     serializer_class = IssueDetailSerializer
     queryset = Issue.objects.all()

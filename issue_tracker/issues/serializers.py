@@ -15,17 +15,17 @@ class LabelSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    created_by = UserSerializer(required=False)
+    created_by = UserSerializer(required=False, read_only=True)
     
     class Meta:
         model = Comment
         fields = ['id', 'created_by', 'text', 'created_at']
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'created_by', 'created_at']
 
 
 class IssueSerializer(serializers.ModelSerializer):
-    created_by = UserSerializer(required=False)
-    assigned_to = UserSerializer(required=False)
+    created_by = UserSerializer(required=False, read_only=True)
+    assigned_to = UserSerializer(required=False, read_only=True)
     labels = LabelSerializer(many=True, required=False)
     comments = CommentSerializer(
         many=True, required=False, source='issue_comments'
@@ -44,7 +44,7 @@ class IssueSerializer(serializers.ModelSerializer):
             'created_by', 'assigned_to', 'status',
             'labels', 'comments', 'assigned_to_id',
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_by', 'created_at', 'updated_at']
 
     def _get_or_create_labels(self, labels, issue):
         """Handle getting or creating labels as needed."""

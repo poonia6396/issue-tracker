@@ -77,6 +77,16 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=True,
+            methods=['get'],
+            url_path='memberships',
+            url_name='memberships')
+    def list_memberships(self, request, pk=None):
+        project = Project.objects.get(id=pk)
+        memberships = ProjectMembership.objects.filter(project=project)
+        serializer = ProjectMembershipSerializer(memberships, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=True,
             methods=['post'],
             url_path='members/add',
             url_name='add_member')

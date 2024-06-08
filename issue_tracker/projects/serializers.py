@@ -26,9 +26,9 @@ class ProjectMembershipSerializer(ModelSerializer):
 
 
 class ProjectSerializer(ModelSerializer):
-    issues = IssueSerializer(many=True, required=False)
+    issues = IssueSerializer(many=True, required=False, read_only=True)
     members = ProjectMembershipSerializer(
-        many=True, required=False, source='project_members'
+        many=True, required=False, source='project_members', read_only=True
     )
 
     class Meta:

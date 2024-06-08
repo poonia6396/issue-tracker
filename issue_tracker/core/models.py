@@ -82,9 +82,7 @@ class Label(models.Model):
 class Issue(models.Model):
 
     STATUS_CHOICES = (
-        ('New', 'New'),
-        ('In Progress', 'In Progress'),
-        ('Resolved', 'Resolved'),
+        ('Open', 'Open'),
         ('Closed', 'Closed'),
     )
 
