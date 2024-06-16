@@ -18,6 +18,8 @@ jobs:
       uses: docker/setup-buildx-action@v1
 
     - name: Login to Heroku Container Registry
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: echo "$HEROKU_API_KEY" | docker login --username=_ --password-stdin registry.heroku.com
 
     - name: Build and Push Backend Docker image
@@ -26,6 +28,8 @@ jobs:
         docker push registry.heroku.com/issue_tracker_backend/web
 
     - name: Release Backend
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: |
         heroku container:release web --app issue_tracker_backend
 
