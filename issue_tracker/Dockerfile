@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED 1
 
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
-COPY ./issue_tracker /issue_tracker
+COPY . /issue_tracker
 WORKDIR /issue_tracker
 EXPOSE 8000
 

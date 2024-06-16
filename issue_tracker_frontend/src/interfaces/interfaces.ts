@@ -3,11 +3,21 @@ export interface User {
   email: string;
   name: string;
 }
-  
+
+export interface Membership {
+  id: number;
+  user: number;
+  project: number;
+  role: string;
+  user_email: string;
+  project_name: string;
+}
+
 export interface Project {
   id: number;
   name: string;
   members: User[];
+  memberships: Membership[];
   issues: Issue[];
   description: string;
 }
@@ -23,7 +33,7 @@ export interface Issue {
   priority: string;
   created_at: string;
   updated_at: string;
-  due_date: string | null;
+  due_date: Date | null;
 }
 
 export interface Label {

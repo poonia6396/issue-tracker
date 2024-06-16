@@ -1,3 +1,4 @@
+/* src/pages/ProjectIssuesPage.module.css */
 .container {
   padding: 20px;
 }
@@ -18,18 +19,34 @@
   margin-bottom: 10px;
 }
 
+.searchInputGroup {
+  flex: 1; /* Make the search input take up remaining space */
+}
+
+.controlGroup {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap; /* Prevent wrapping */
+  gap: 0.5rem;
+}
+
+.customDropdown {
+  min-width: 120px;
+}
+
 .createIssueButton {
-  background-color: #007bff;
+  background-color: #28a745; /* Green color */
   color: white;
-  border: none;
-  padding: 10px 20px;
+  border: 1px solid #28a745; /* Match the border with background color */
+  padding: 0.375rem 0.75rem; /* Match padding with dropdown buttons */
+  font-size: 1rem; /* Match font size with dropdown buttons */
   cursor: pointer;
-  font-size: 16px;
-  margin-bottom: 20px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+  border-radius: 0.25rem; /* Match border radius with dropdown buttons */
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  flex-shrink: 0;
 }
 
 .createIssueButton:hover {
-  background-color: #0056b3;
+  background-color: #0f6935; 
+  border-color: #03932c;
 }

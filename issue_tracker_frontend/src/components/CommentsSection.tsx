@@ -1,3 +1,5 @@
+// CommentsSection.tsx
+
 import React, { useState } from "react";
 import { Card, Button, Form, Dropdown } from "react-bootstrap";
 import Avatar from "react-avatar";
@@ -12,15 +14,18 @@ interface CommentsSectionProps {
   handleCommentSubmit: (e: React.FormEvent) => void;
   handleEditComment: (commentId: number, newText: string) => void;
   handleDeleteComment: (commentId: number) => void;
+  isIssueOpen: boolean;
 }
 
 const CommentsSection: React.FC<CommentsSectionProps> = ({
   comments,
   newComment,
+  setNewComment,
   handleCommentChange,
   handleCommentSubmit,
   handleEditComment,
   handleDeleteComment,
+  isIssueOpen,
 }) => {
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editedText, setEditedText] = useState("");
@@ -56,25 +61,31 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
             <span className={styles.commentDate}>
               {new Date(comment.created_at).toLocaleString()}
             </span>
-            <Dropdown className={styles.commentActionsDropdown}>
-              <Dropdown.Toggle
-                variant="secondary"
-                id="dropdown-basic"
-                size="sm"
-                className={styles.threeDotButton}
-              >
-                &#x22EE;
-              </Dropdown.Toggle>
+            {isIssueOpen && (
+              <Dropdown className={styles.commentActionsDropdown}>
+                <Dropdown.Toggle
+                  variant="secondary"
+                  id="dropdown-basic"
+                  size="sm"
+                  className={styles.threeDotButton}
+                >
+                  &#x22EE;
+                </Dropdown.Toggle>
 
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={() => handleEdit(index, comment.text)}>
-                  Edit
-                </Dropdown.Item>
-                <Dropdown.Item onClick={() => handleDeleteComment(comment.id)}>
-                  Delete
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+                <Dropdown.Menu>
+                  <Dropdown.Item
+                    onClick={() => handleEdit(index, comment.text)}
+                  >
+                    Edit
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => handleDeleteComment(comment.id)}
+                  >
+                    Delete
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
           </div>
           <Card.Body>
             {editIndex === index ? (
@@ -99,20 +110,22 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
           </Card.Body>
         </Card>
       ))}
-      <Form onSubmit={handleCommentSubmit} className="mt-4">
-        <Form.Group controlId="commentText">
-          <Form.Label>Add a Comment</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            value={newComment}
-            onChange={handleCommentChange}
-          />
-        </Form.Group>
-        <Button variant="primary" type="submit" className="mt-2">
-          Add Comment
-        </Button>
-      </Form>
+      {isIssueOpen && (
+        <Form onSubmit={handleCommentSubmit} className="mt-4">
+          <Form.Group controlId="commentText">
+            <Form.Label>Add a Comment</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={newComment}
+              onChange={handleCommentChange}
+            />
+          </Form.Group>
+          <Button variant="primary" type="submit" className="mt-2">
+            Add Comment
+          </Button>
+        </Form>
+      )}
     </div>
   );
 };

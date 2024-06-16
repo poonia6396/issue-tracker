@@ -2,25 +2,49 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   getProject,
-  getProjectMembers,
+  getProjectMemberships,
   addProjectMember,
   removeProjectMember,
+  updateProject,
+  getIssuesForProject,
 } from "../api/api";
-import { Project } from "../interfaces/interfaces";
+import { Project, Label, User } from "../interfaces/interfaces";
 import AddMembersModal from "../components/AddMembersModal";
+import {
+  Badge,
+  Button,
+  Container,
+  Row,
+  Col,
+  ListGroup,
+  Modal,
+  Form,
+  Dropdown,
+} from "react-bootstrap";
+import { FaUserPlus, FaUserMinus, FaEdit } from "react-icons/fa";
 import styles from "./ProjectDetailsPage.module.css";
+import { useUser } from "../contexts/UserContext";
 
 const ProjectDetailsPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
+  const { user } = useUser();
   const [project, setProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
         const projectResponse = await getProject(Number(projectId));
-        const membersResponse = await getProjectMembers(Number(projectId));
-        setProject({ ...projectResponse.data, members: membersResponse.data });
+        const membersResponse = await getProjectMemberships(Number(projectId));
+        setProject({
+          ...projectResponse.data,
+          memberships: membersResponse.data,
+        });
+        setEditedTitle(projectResponse.data.name);
+        setEditedDescription(projectResponse.data.description);
       } catch (error) {
         console.error("Failed to fetch project", error);
       }
@@ -29,13 +53,25 @@ const ProjectDetailsPage: React.FC = () => {
     fetchProject();
   }, [projectId]);
 
+  const handleEdit = async () => {
+    try {
+      await updateProject(Number(projectId), {
+        name: editedTitle,
+        description: editedDescription,
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Failed to update project", error);
+    }
+  };
+
   const handleAddMembers = async (email: string, role: string) => {
     try {
       await addProjectMember(Number(projectId), { email, role });
-      const membersResponse = await getProjectMembers(Number(projectId));
+      const membersResponse = await getProjectMemberships(Number(projectId));
       setProject(
         (prevProject) =>
-          prevProject && { ...prevProject, members: membersResponse.data }
+          prevProject && { ...prevProject, memberships: membersResponse.data }
       );
       setIsModalOpen(false);
     } catch (error) {
@@ -45,51 +81,105 @@ const ProjectDetailsPage: React.FC = () => {
 
   const handleRemoveMember = async (email: string) => {
     try {
-      await removeProjectMember(Number(projectId), { email: email });
-      const membersResponse = await getProjectMembers(Number(projectId));
+      await removeProjectMember(Number(projectId), { email });
+      const membersResponse = await getProjectMemberships(Number(projectId));
       setProject(
         (prevProject) =>
-          prevProject && { ...prevProject, members: membersResponse.data }
+          prevProject && { ...prevProject, memberships: membersResponse.data }
       );
     } catch (error) {
       console.error("Failed to remove member", error);
     }
   };
 
+  const isAdmin = project?.memberships.some(
+    (membership) =>
+      membership.user_email === user?.email && membership.role === "admin"
+  );
+
   return (
-    <div className={styles.container}>
+    <Container className={styles.container}>
       {project && (
         <>
-          <h1 className={styles.title}>{project.name}</h1>
-          <h2>Members</h2>
-          <ul>
-            {project.members.map((member) => (
-              <li key={member.id}>
-                {member.email}
-                <button
-                  onClick={() => handleRemoveMember(member.email)}
-                  className={styles.removeButton}
-                >
-                  Remove
-                </button>
-              </li>
-            ))}
-          </ul>
-          <button
-            className={styles.addButton}
-            onClick={() => setIsModalOpen(true)}
-          >
-            Add Members
-          </button>
-          {isModalOpen && (
+          <Row className="justify-content-center text-center mb-4">
+            <Col md={8}>
+              {isEditing ? (
+                <>
+                  <Form.Control
+                    type="text"
+                    value={editedTitle}
+                    onChange={(e) => setEditedTitle(e.target.value)}
+                  />
+                  <Form.Control
+                    as="textarea"
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                  />
+                  <Button onClick={handleEdit}>Save</Button>
+                </>
+              ) : (
+                <>
+                  <h1 className={styles.title}>{project.name}</h1>
+                  <p className={styles.description}>{project.description}</p>
+                  {isAdmin && (
+                    <Button onClick={() => setIsEditing(true)}>
+                      <FaEdit />
+                    </Button>
+                  )}
+                </>
+              )}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <h2>Manage Members</h2>
+              <ListGroup>
+                {project.memberships.map((membership) => (
+                  <ListGroup.Item key={membership.user}>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        {membership.user_email}
+                        <Badge
+                          bg={
+                            membership.role === "admin" ? "danger" : "secondary"
+                          }
+                          className="ms-2"
+                        >
+                          {membership.role}
+                        </Badge>
+                      </div>
+                      {isAdmin && membership.role !== "admin" && (
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() =>
+                            handleRemoveMember(membership.user_email)
+                          }
+                        >
+                          <FaUserMinus /> Remove
+                        </Button>
+                      )}
+                    </div>
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+              {isAdmin && (
+                <Button className="mt-3" onClick={() => setIsModalOpen(true)}>
+                  <FaUserPlus className="me-2" />
+                  Add Members
+                </Button>
+              )}
+            </Col>
+          </Row>
+          <Modal show={isModalOpen} onHide={() => setIsModalOpen(false)}>
             <AddMembersModal
               onClose={() => setIsModalOpen(false)}
               onAddMember={handleAddMembers}
             />
-          )}
+          </Modal>
         </>
       )}
-    </div>
+    </Container>
   );
 };
 

@@ -3,14 +3,7 @@ import React from "react";
 import { Card, Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { FaExclamationCircle } from "react-icons/fa";
-
-interface Issue {
-  id: number;
-  title: string;
-  description: string;
-  status: string;
-  priority: string;
-}
+import { Issue } from "../interfaces/interfaces";
 
 interface IssueContainerProps {
   issue: Issue;
@@ -24,7 +17,10 @@ const IssueContainer: React.FC<IssueContainerProps> = ({ issue }) => {
   };
 
   const getStatusVariant = (status: string) => {
-    switch (status) {
+    if (!status) {
+      return "primary";
+    }
+    switch (status.toLowerCase()) {
       case "open":
         return "success";
       case "in-progress":
@@ -37,7 +33,10 @@ const IssueContainer: React.FC<IssueContainerProps> = ({ issue }) => {
   };
 
   const getPriorityVariant = (priority: string) => {
-    switch (priority) {
+    if (!priority) {
+      return "primary";
+    }
+    switch (priority.toLowerCase()) {
       case "low":
         return "success";
       case "medium":

@@ -1,4 +1,8 @@
-import React from "react";
+// IssueSidePanel.tsx
+
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { Form, Button, InputGroup } from "react-bootstrap";
 import { Label, User, Issue } from "../interfaces/interfaces";
 import styles from "../pages/IssueDetailsPage.module.css";
@@ -13,6 +17,7 @@ interface IssueSidePanelProps {
   newAssignee: User | null;
   setNewAssignee: React.Dispatch<React.SetStateAction<User | null>>;
   handleAddAssignee: () => void;
+  onUpdateDueDate: (dueDate: Date | null) => void;
   issue: Issue;
 }
 
@@ -26,8 +31,11 @@ const IssueSidePanel: React.FC<IssueSidePanelProps> = ({
   newAssignee,
   setNewAssignee,
   handleAddAssignee,
+  onUpdateDueDate,
   issue,
 }) => {
+  const isIssueOpen = issue.status === "Open";
+
   return (
     <div className={styles.sidePanel}>
       <div className={styles.detailSection}>
@@ -56,9 +64,18 @@ const IssueSidePanel: React.FC<IssueSidePanelProps> = ({
         </p>
         <p>
           <strong>Due date:</strong>{" "}
-          {issue.due_date
-            ? new Date(issue.due_date).toLocaleDateString()
-            : "N/A"}
+          {isIssueOpen ? (
+            <DatePicker
+              selected={issue.due_date}
+              onChange={(date: Date | null) => onUpdateDueDate(date)}
+              dateFormat="yyyy-MM-dd"
+              className="form-control"
+            />
+          ) : issue.due_date ? (
+            new Date(issue.due_date).toLocaleDateString()
+          ) : (
+            "N/A"
+          )}
         </p>
       </div>
 
@@ -72,57 +89,63 @@ const IssueSidePanel: React.FC<IssueSidePanelProps> = ({
             }`}
           >
             {label.name}
-            <Button
-              variant="outline-secondary"
-              size="sm"
-              onClick={() => handleRemoveLabel(label.id)}
-              className={styles.labelButton}
-            >
-              X
-            </Button>
+            {isIssueOpen && (
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                onClick={() => handleRemoveLabel(label.id)}
+                className={styles.labelButton}
+              >
+                X
+              </Button>
+            )}
           </span>
         ))}
-        <InputGroup className={styles.inputGroupMargin}>
-          <Form.Control
-            type="text"
-            placeholder="Add label"
-            value={newLabel}
-            onChange={(e) => setNewLabel(e.target.value)}
-          />
-          <Button variant="outline-secondary" onClick={handleAddLabel}>
-            Add
-          </Button>
-        </InputGroup>
+        {isIssueOpen && (
+          <InputGroup className={styles.inputGroupMargin}>
+            <Form.Control
+              type="text"
+              placeholder="Add label"
+              value={newLabel}
+              onChange={(e) => setNewLabel(e.target.value)}
+            />
+            <Button variant="outline-secondary" onClick={handleAddLabel}>
+              Add
+            </Button>
+          </InputGroup>
+        )}
       </div>
 
-      <div className={styles.assigneeSection}>
-        <h5>Assignee</h5>
-        <Form.Group>
-          <Form.Control
-            as="select"
-            value={newAssignee ? newAssignee.id : ""}
-            onChange={(e) => {
-              const selectedUser = projectMembers.find(
-                (member) => member.id === Number(e.target.value)
-              );
-              setNewAssignee(selectedUser || null);
-            }}
+      {isIssueOpen && (
+        <div className={styles.assigneeSection}>
+          <h5>Assignee</h5>
+          <Form.Group>
+            <Form.Control
+              as="select"
+              value={newAssignee ? newAssignee.id : ""}
+              onChange={(e) => {
+                const selectedUser = projectMembers.find(
+                  (member) => member.id === Number(e.target.value)
+                );
+                setNewAssignee(selectedUser || null);
+              }}
+            >
+              {projectMembers.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.email}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+          <Button
+            variant="outline-secondary"
+            onClick={handleAddAssignee}
+            className="mr-2"
           >
-            {projectMembers.map((member) => (
-              <option key={member.id} value={member.id}>
-                {member.email}
-              </option>
-            ))}
-          </Form.Control>
-        </Form.Group>
-        <Button
-          variant="outline-secondary"
-          onClick={handleAddAssignee}
-          className="mr-2"
-        >
-          Assign
-        </Button>
-      </div>
+            Assign
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

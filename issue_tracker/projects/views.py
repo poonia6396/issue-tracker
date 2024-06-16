@@ -36,6 +36,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """Convert a list of strings to integers."""
         return [int(str_id) for str_id in qs.split(',')]
 
+    def _is_admin_user(self, user, project):
+        try:
+            request_user_membership = ProjectMembership.objects.get(
+                user=user, project=project
+            )
+            return request_user_membership.role == 'admin'
+        except ProjectMembership.DoesNotExist:
+            return False
+
     def perform_create(self, serializer):
         """Create the project object"""
         project = serializer.save(created_by=self.request.user)
@@ -85,7 +94,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         memberships = ProjectMembership.objects.filter(project=project)
         serializer = ProjectMembershipSerializer(memberships, many=True)
         return Response(serializer.data)
-    
+
     @action(detail=True,
             methods=['post'],
             url_path='members/add',
@@ -99,6 +108,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return Response(
                 {"detail": "User email and role are required."},
                 status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not self._is_admin_user(self.request.user, project):
+            return Response(
+                {"detail": "Users can only be added by admin members"},
+                status=status.HTTP_403_FORBIDDEN
             )
 
         user = get_object_or_404(get_user_model(), email=email)
@@ -120,6 +135,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 {"detail": "User email is required."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        if not self._is_admin_user(self.request.user, project):
+            return Response(
+                {"detail": "Users can only be removed by admin members"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         try:
             user = get_user_model().objects.get(email=email)
         except get_user_model().DoesNotExist:

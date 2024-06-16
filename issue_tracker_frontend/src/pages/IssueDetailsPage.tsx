@@ -1,3 +1,5 @@
+// IssueDetailsPage.tsx
+
 import React, { useEffect, useState } from "react";
 import {
   getIssueDetails,
@@ -5,24 +7,22 @@ import {
   addComment,
   updateIssueLabels,
   updateIssueAssignee,
+  updateIssueStatus,
   getProjectMembers,
   updateComment,
   deleteComment,
+  updateIssueDueDate,
 } from "../api/api";
 import { useParams } from "react-router-dom";
-import { Container } from "react-bootstrap";
+import { Container, Button } from "react-bootstrap";
 import { User, Issue, Comment } from "../interfaces/interfaces";
 import IssueDetails from "../components/IssueDetails";
 import IssueSidePanel from "../components/IssueSidePanel";
 import CommentsSection from "../components/CommentsSection";
 import styles from "./IssueDetailsPage.module.css";
 
-interface Params extends Record<string, string | undefined> {
-  issueId: string;
-}
-
 const IssueDetailsPage: React.FC = () => {
-  const { issueId } = useParams<Params>();
+  const { issueId } = useParams<{ issueId: string }>();
   const [issue, setIssue] = useState<Issue | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -51,10 +51,6 @@ const IssueDetailsPage: React.FC = () => {
     fetchComments();
     fetchProjectMembers();
   }, [issueId]);
-
-  useEffect(() => {
-    setNewAssignee(issue?.assigned_to ?? null);
-  }, [issue]);
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewComment(e.target.value);
@@ -85,16 +81,12 @@ const IssueDetailsPage: React.FC = () => {
   };
 
   const handleDeleteComment = async (commentId: number) => {
-    try {
-      await deleteComment(commentId);
-      const updatedComments = comments.filter(
-        (comment) => comment.id !== commentId
-      );
-      setComments(updatedComments);
-    } catch (error) {
-      console.error("Delete comment failed", error);
-    }
+    await deleteComment(commentId);
+    setComments((prevComments) =>
+      prevComments.filter((comment) => comment.id !== commentId)
+    );
   };
+
   const handleAddLabel = async () => {
     if (newLabel.trim() !== "") {
       const updatedLabels = [
@@ -145,36 +137,62 @@ const IssueDetailsPage: React.FC = () => {
     }
   };
 
+  const handleUpdateDueDate = async (dueDate: Date | null) => {
+    if (dueDate) {
+      try {
+        await updateIssueDueDate(Number(issueId), {
+          due_date: dueDate.toISOString().split("T")[0],
+        });
+        setIssue((prevIssue) =>
+          prevIssue ? { ...prevIssue, due_date: dueDate } : prevIssue
+        );
+      } catch (error) {
+        console.error("Add due date failed", error);
+      }
+    }
+  };
+
+  const handleStatusToggle = async () => {
+    if (issue) {
+      const newStatus = issue.status === "Open" ? "Closed" : "Open";
+      await updateIssueStatus(issue.id, newStatus);
+      setIssue({ ...issue, status: newStatus });
+    }
+  };
+
+  if (!issue) return <div>Loading...</div>;
+
   return (
     <Container className={styles.container}>
-      {issue && (
-        <>
-          <div className={styles.mainContent}>
-            <IssueDetails issue={issue} />
-            <CommentsSection
-              comments={comments}
-              newComment={newComment}
-              setNewComment={setNewComment}
-              handleCommentChange={handleCommentChange}
-              handleCommentSubmit={handleCommentSubmit}
-              handleEditComment={handleEditComment}
-              handleDeleteComment={handleDeleteComment}
-            />
-          </div>
-          <IssueSidePanel
-            labels={issue.labels}
-            newLabel={newLabel}
-            setNewLabel={setNewLabel}
-            handleAddLabel={handleAddLabel}
-            handleRemoveLabel={handleRemoveLabel}
-            projectMembers={projectMembers}
-            newAssignee={newAssignee}
-            setNewAssignee={setNewAssignee}
-            handleAddAssignee={handleAddAssignee}
-            issue={issue}
-          />
-        </>
-      )}
+      <div className={styles.mainContent}>
+        <IssueDetails issue={issue} />
+        <Button onClick={handleStatusToggle} className="mt-3">
+          {issue.status === "Open" ? "Close Issue" : "Open Issue"}
+        </Button>
+        <CommentsSection
+          comments={comments}
+          newComment={newComment}
+          setNewComment={setNewComment}
+          handleCommentChange={handleCommentChange}
+          handleCommentSubmit={handleCommentSubmit}
+          handleEditComment={handleEditComment}
+          handleDeleteComment={handleDeleteComment}
+          isIssueOpen={issue.status === "Open"}
+        />
+      </div>
+      <IssueSidePanel
+        labels={issue.labels}
+        newLabel={newLabel}
+        setNewLabel={setNewLabel}
+        handleAddLabel={handleAddLabel}
+        handleRemoveLabel={handleRemoveLabel}
+        projectMembers={projectMembers}
+        newAssignee={newAssignee}
+        setNewAssignee={setNewAssignee}
+        handleAddAssignee={handleAddAssignee}
+        onUpdateDueDate={handleUpdateDueDate}
+        issue={issue}
+      />
     </Container>
   );
 };

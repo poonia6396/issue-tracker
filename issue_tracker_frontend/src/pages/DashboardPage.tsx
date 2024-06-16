@@ -2,8 +2,13 @@ import React, { useEffect, useState } from "react";
 import { getProjects } from "../api/api";
 import ProjectList from "../components/ProjectList";
 import { useNavigate } from "react-router-dom";
-import { FaPlus, FaFilter, FaListOl, FaSearch, FaSignal } from "react-icons/fa";
-import { Button, InputGroup, FormControl } from "react-bootstrap";
+import {
+  Button,
+  InputGroup,
+  FormControl,
+  Dropdown,
+  DropdownButton,
+} from "react-bootstrap";
 import styles from "./DashboardPage.module.css";
 import { Project } from "../interfaces/interfaces";
 import { useUser } from "../contexts/UserContext";
@@ -13,6 +18,9 @@ const DashboardPage: React.FC = () => {
   const firstNameLetter = user ? user.email.charAt(0).toUpperCase() : "";
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("date");
+  const [sortOrder, setSortOrder] = useState("desc");
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -22,46 +30,65 @@ const DashboardPage: React.FC = () => {
     fetchProjects();
   }, []);
 
+  const filteredProjects = projects.filter(
+    (project) =>
+      project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleCreateProject = () => {
+    navigate("/create-project");
+  };
+
   return (
-    <div className="d-flex h-100">
-      <div className={`bg-light p-3 ${styles.sidebar}`}>
-        <Button
-          onClick={() => navigate("/create-project")}
-          variant="primary"
-          className="w-100 mb-3"
-        >
-          <FaPlus className="me-2" />
-          Create Project
-        </Button>
-        <div className="d-flex flex-column gap-2">
-          <Button variant="outline-secondary" className="w-100">
-            <FaFilter />
-          </Button>
-          <Button variant="outline-secondary" className="w-100">
-            <FaListOl />
-          </Button>
-          <Button variant="outline-secondary" className="w-100">
-            <FaSearch />
+    <div className="py-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 className="h3">Projects</h1>
+        <div className={styles.controlGroup}>
+          <InputGroup className={styles.searchInputGroup}>
+            <FormControl
+              type="search"
+              placeholder="Search projects..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </InputGroup>
+          <DropdownButton
+            id="sort-by-dropdown"
+            title={`Sort by: ${sortBy}`}
+            className={`me-2 ${styles.customDropdown}`}
+          >
+            <Dropdown.Item onClick={() => setSortBy("date")}>
+              Date
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setSortBy("status")}>
+              Status
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setSortBy("assigned_to")}>
+              Assignee
+            </Dropdown.Item>
+          </DropdownButton>
+          <DropdownButton
+            id="order-by-dropdown"
+            title={`Order: ${sortOrder === "asc" ? "Ascending" : "Descending"}`}
+            className={`me-2 ${styles.customDropdown}`}
+          >
+            <Dropdown.Item onClick={() => setSortOrder("asc")}>
+              Ascending
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setSortOrder("desc")}>
+              Descending
+            </Dropdown.Item>
+          </DropdownButton>
+          <Button
+            className={`${styles.createButton} ${styles.customButton}`}
+            onClick={handleCreateProject}
+          >
+            Create Project
           </Button>
         </div>
       </div>
-      <div className="flex-grow-1 bg-white p-4 overflow-auto">
-        <header className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="h3">Projects</h1>
-          <div className="d-flex align-items-center gap-3">
-            <InputGroup>
-              <FormControl placeholder="Search projects..." />
-            </InputGroup>
-            <Button variant="outline-secondary">
-              <FaSignal />
-            </Button>
-            <Button className="profileImage" variant="outline-secondary">
-              {firstNameLetter}
-            </Button>
-          </div>
-        </header>
-        <ProjectList projects={projects} />
-      </div>
+      <ProjectList projects={filteredProjects} />
     </div>
   );
 };
