@@ -24,7 +24,7 @@ jobs:
 
     - name: Build and Push Backend Docker image
       run: |
-        docker buildx build --platform linux/amd64 -t registry.heroku.com/issue_tracker_backend/web -f ./issue_tracker/Dockerfile .
+        docker buildx build --platform linux/amd64 -t registry.heroku.com/issue_tracker_backend/web -f ./issue_tracker/Dockerfile ./issue_tracker
         docker push registry.heroku.com/issue_tracker_backend/web
 
     - name: Release Backend
