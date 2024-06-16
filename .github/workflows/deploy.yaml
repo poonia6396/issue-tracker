@@ -27,7 +27,7 @@ jobs:
         docker buildx build --platform linux/amd64 -t registry.heroku.com/issue_tracker_backend/web -f ./issue_tracker/Dockerfile ./issue_tracker --push
 
     - name: Push Docker image to Heroku Container Registry
-        run: docker push registry.heroku.com/your-app-name/web
+      run: docker push registry.heroku.com/your-app-name/web
 
     - name: Release Docker image to Heroku
       env:
@@ -46,8 +46,8 @@ jobs:
       uses: docker/setup-buildx-action@v1
 
     - name: Login to Heroku Container Registry
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: echo "$HEROKU_API_KEY" | docker login --username=_ --password-stdin registry.heroku.com
 
     - name: Build and Push Frontend Docker image
