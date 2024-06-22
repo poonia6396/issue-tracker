@@ -34,6 +34,9 @@ RUN python -m venv /py && \
 
 ENV PATH="/py/bin:$PATH"
 
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 USER django-user
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "issue_tracker.wsgi:application"]
+ENTRYPOINT ["/entrypoint.sh"]
