@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-pu$nc5049bhbr%-x@jm*uml@@zk2sfxb1b^09bitbh#yr4@8_1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['issue-tracker-backend-zfkld7msdq-uc.a.run.app', '127.0.0.1']
 
 
 # Application definition
@@ -85,11 +85,8 @@ WSGI_APPLICATION = 'issue_tracker.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': os.environ.get('DB_HOST'),
-        'NAME': os.environ.get('POSTGRES_DB'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -138,33 +135,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.User'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost",
+    'https://issue-tracker-frontend-zfkld7msdq-uc.a.run.app',
+    'https://issue-tracker-backend-zfkld7msdq-uc.a.run.app'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-
-# Allow specific HTTP methods
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
-
-# Allow specific HTTP headers
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "accept-encoding",
-    "authorization",
-    "content-type",
-    "dnt",
-    "origin",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-]
 
 
 REST_FRAMEWORK = {

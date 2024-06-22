@@ -4,3 +4,4 @@ django-filter
 psycopg2
 drf_spectacular
 django-cors-headers
+gunicorn
