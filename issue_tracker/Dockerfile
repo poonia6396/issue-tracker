@@ -7,6 +7,8 @@ COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 COPY . /issue_tracker
 WORKDIR /issue_tracker
+
+ENV PORT 8000
 EXPOSE 8000
 
 ARG DEV=false
@@ -33,3 +35,5 @@ RUN python -m venv /py && \
 ENV PATH="/py/bin:$PATH"
 
 USER django-user
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "issue_tracker.wsgi:application"]
