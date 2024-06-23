@@ -8,7 +8,6 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-
 # Create your models here.
 
 
@@ -109,7 +108,7 @@ class Issue(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='New',
+        default='Open',
     )
     priority = models.CharField(
         max_length=20,
