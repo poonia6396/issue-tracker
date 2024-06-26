@@ -1,18 +1,20 @@
-// src/pages/LoginPage.tsx
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { loginUser, getUser } from "../api/api";
 import { useUser } from "../contexts/UserContext";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Spinner } from "react-bootstrap";
+import styles from "./LoginPage.module.css";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const { setUser, setToken } = useUser();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const { access, refresh } = await loginUser(email, password);
       localStorage.setItem("refresh_token", refresh);
@@ -20,17 +22,23 @@ const LoginPage: React.FC = () => {
 
       const response = await getUser();
       setUser(response.data);
-      // Store the token in localStorage or cookie if needed
 
-      navigate("/dashboard"); // or any other route
+      setTimeout(() => {
+        navigate("/dashboard"); // or any other route
+      }, 500); // Delay to show the spinner a bit longer
     } catch (error) {
       console.error("Login failed", error);
-      // Handle login error (e.g., show an error message)
+      setLoading(false); // Hide spinner if login fails
     }
   };
 
   return (
     <div className="login-container">
+      {loading && (
+        <div className={`${styles.overlay} ${loading ? styles["fade-in"] : styles.hidden}`}>
+          <Spinner animation="border" variant="primary" />
+        </div>
+      )}
       <h2>Login</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="formBasicEmail">

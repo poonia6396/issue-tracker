@@ -19,8 +19,12 @@ import CustomNavbar from "./components/CustomNavbar";
 import CustomBreadcrumbs from "./components/CustomBreadcrumbs";
 import ProjectsPage from "./pages/ProjectsPage";
 import IssuesPage from "./pages/IssuesPage";
+import LoadingSpinner from './components/LoadingSpinner';
+
 
 const App: React.FC = () => {
+ 
+
   return (
     <Router>
       <CustomNavbar />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Navigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 
@@ -8,19 +8,16 @@ interface PrivateRouteProps {
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const { user, token } = useUser();
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (token !== null) {
-      setIsLoading(false);
-    }
-  }, [token]);
+  if (token === null) {
+    return <Navigate to="/login" />;
+  }
 
-  if (isLoading) {
+  if (user === null) {
     return <div>Loading...</div>; // Or any loading indicator
   }
 
-  return user ? children : <Navigate to="/login" />;
+  return children;
 };
 
 export default PrivateRoute;

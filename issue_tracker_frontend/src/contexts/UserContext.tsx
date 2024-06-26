@@ -14,6 +14,7 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem("access_token"));
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -28,6 +29,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           localStorage.removeItem("refresh_token");
         }
       }
+      setLoading(false);
     };
     fetchUser();
   }, [token]);
@@ -42,7 +44,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   return (
     <UserContext.Provider value={{ user, setUser, token, setToken }}>
-      {children}
+      {!loading && children}
     </UserContext.Provider>
   );
 };
