@@ -25,7 +25,12 @@ SECRET_KEY = 'django-insecure-pu$nc5049bhbr%-x@jm*uml@@zk2sfxb1b^09bitbh#yr4@8_1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['issue-tracker-backend-zfkld7msdq-uc.a.run.app', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'issue-tracker-backend-zfkld7msdq-uc.a.run.app',
+    '127.0.0.1',
+    'localhost',
+    'issue-tracker-frontend-zfkld7msdq-uc.a.run.app',
+]
 
 
 # Application definition
@@ -140,16 +145,21 @@ AUTH_USER_MODEL = 'core.User'
 
 CORS_ALLOWED_ORIGINS = [
     'https://issue-tracker-frontend-zfkld7msdq-uc.a.run.app',
-    'https://issue-tracker-backend-zfkld7msdq-uc.a.run.app'
+    'https://issue-tracker-backend-zfkld7msdq-uc.a.run.app',
+    'http://localhost:8080'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://issue-tracker-backend-zfkld7msdq-uc.a.run.app',
+]
+
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
-    # ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
 }

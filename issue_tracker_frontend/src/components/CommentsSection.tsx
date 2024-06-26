@@ -1,5 +1,3 @@
-// CommentsSection.tsx
-
 import React, { useState } from "react";
 import { Card, Button, Form, Dropdown } from "react-bootstrap";
 import Avatar from "react-avatar";
@@ -41,6 +39,15 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
       setEditIndex(null);
       setEditedText("");
     }
+  };
+
+  const renderCommentText = (text: string) => {
+    return text.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ));
   };
 
   return (
@@ -105,7 +112,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
                 </Button>
               </Form.Group>
             ) : (
-              <Card.Text>{comment.text}</Card.Text>
+              <Card.Text>{renderCommentText(comment.text)}</Card.Text>
             )}
           </Card.Body>
         </Card>

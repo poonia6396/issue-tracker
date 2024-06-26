@@ -1,38 +1,40 @@
-// src/pages/LoginPage.tsx
+// src/pages/SignUpPage.tsx
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { loginUser, getUser } from "../api/api";
-import { useUser } from "../contexts/UserContext";
+import { useNavigate } from "react-router-dom";
+import { createUser } from "../api/api";
 import { Form, Button } from "react-bootstrap";
 
-const LoginPage: React.FC = () => {
+const SignUpPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser, setToken } = useUser();
+  const [name, setName] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { access, refresh } = await loginUser(email, password);
-      localStorage.setItem("refresh_token", refresh);
-      setToken(access);
-
-      const response = await getUser();
-      setUser(response.data);
-      // Store the token in localStorage or cookie if needed
-
-      navigate("/dashboard"); // or any other route
+      await createUser({ email, password, name });
+      navigate("/login");
     } catch (error) {
-      console.error("Login failed", error);
-      // Handle login error (e.g., show an error message)
+      console.error("Sign up failed", error);
+      // Handle sign up error (e.g., show an error message)
     }
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
+    <div className="signup-container">
+      <h2>Sign Up</h2>
       <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="formBasicName">
+          <Form.Label>Name</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </Form.Group>
+
         <Form.Group controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
@@ -54,16 +56,11 @@ const LoginPage: React.FC = () => {
         </Form.Group>
 
         <Button variant="primary" type="submit">
-          Login
+          Sign Up
         </Button>
       </Form>
-      <div className="mt-3">
-        <p>
-          Don't have an account? <Link to="/signup">Sign Up</Link>
-        </p>
-      </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default SignUpPage;
