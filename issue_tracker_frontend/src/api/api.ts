@@ -1,11 +1,17 @@
 import axiosInstance from './axiosInstance';
 
 interface LoginResponse {
-  token: string;
+  access: string;
+  refresh: string;
 }
 
 export const loginUser = async (email: string, password: string ): Promise<LoginResponse> => {
   const response = await axiosInstance.post(`/user/token/`, { email, password });
+  return response.data;
+};
+
+export const createUser = async (userData: { email: string, password: string, name: string }) => {
+  const response = await axiosInstance.post("/user/create/", userData);
   return response.data;
 };
 
@@ -90,10 +96,6 @@ export const deleteComment = async (commentId: number) => {
 
 export const getUser = () => {
   return axiosInstance.get('/user/me');
-};
-
-export const createUser = (user: { email: string }) => {
-  return axiosInstance.post('/user/create/', user);
 };
 
 export const getProjectMembers = (projectId: number) => {

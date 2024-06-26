@@ -4,7 +4,7 @@ Views for the issues API.
 from rest_framework import (
     viewsets, mixins, status
 )
-from rest_framework.authentication import TokenAuthentication
+
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -26,7 +26,6 @@ class IssueViewSet(mixins.DestroyModelMixin,
     """View for manage recipe APIs."""
     serializer_class = IssueDetailSerializer
     queryset = Issue.objects.all()
-    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsReporterOrReadOnly]
     filter_class = IssueFilter
 
@@ -94,7 +93,6 @@ class CommentViewSet(mixins.DestroyModelMixin,
                      mixins.RetrieveModelMixin,
                      viewsets.GenericViewSet,):
     """View for manage comment APIs."""
-    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()

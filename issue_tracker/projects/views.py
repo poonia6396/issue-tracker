@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import (
     viewsets,
@@ -29,7 +28,6 @@ from user.serializers import UserSerializer
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectDetailSerializer
-    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def _params_to_ints(self, qs):
@@ -162,7 +160,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
 class ProjectIssuesViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    authentication_classes = [TokenAuthentication]
     serializer_class = IssueDetailSerializer
     filterset_class = IssueFilter
 
