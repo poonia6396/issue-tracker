@@ -1,4 +1,3 @@
-// src/pages/ProjectIssues.tsx
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getIssuesForProject, getProjectMembers } from "../api/api";
@@ -14,6 +13,7 @@ import {
   Pagination,
   Button,
   Form,
+  Spinner
 } from "react-bootstrap";
 import { Issue, Label, User } from "../interfaces/interfaces";
 import styles from "./ProjectIssuesPage.module.css";
@@ -22,6 +22,7 @@ const ProjectIssues: React.FC = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const [issues, setIssues] = useState<Issue[]>([]);
+  const [loading, setLoading] = useState(true); // Add loading state
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc");
@@ -35,25 +36,31 @@ const ProjectIssues: React.FC = () => {
   useEffect(() => {
     const fetchIssues = async () => {
       if (projectId) {
-        const response = await getIssuesForProject(
-          Number(projectId),
-          selectedLabels,
-          selectedAssignees
-        );
-        setIssues(response.data);
+        setLoading(true);
+        try {
+          const response = await getIssuesForProject(
+            Number(projectId),
+            selectedLabels,
+            selectedAssignees
+          );
+          setIssues(response.data);
+        } finally {
+          setLoading(false);
+        }
       }
     };
     fetchIssues();
   }, [projectId, selectedLabels, selectedAssignees]);
 
-  // Fetch labels and members for filters
   useEffect(() => {
     const fetchLabelsAndMembers = async () => {
-      // Replace with actual API calls to fetch labels and members
-      //const labelsResponse = await getLabelsForProject(Number(projectId));
-      const membersResponse = await getProjectMembers(Number(projectId));
-      //setLabels(labelsResponse.data);
-      setMembers(membersResponse.data);
+      if (projectId) {
+        // Replace with actual API calls to fetch labels and members
+        //const labelsResponse = await getLabelsForProject(Number(projectId));
+        const membersResponse = await getProjectMembers(Number(projectId));
+        //setLabels(labelsResponse.data);
+        setMembers(membersResponse.data);
+      }
     };
     fetchLabelsAndMembers();
   }, [projectId]);
@@ -112,6 +119,11 @@ const ProjectIssues: React.FC = () => {
 
   return (
     <Container className="py-4">
+      {loading && (
+        <div className={`${styles.overlay} ${loading ? styles["fade-in"] : styles.hidden}`}>
+          <Spinner animation="border" variant="primary" />
+        </div>
+      )}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h3">Project Issues</h1>
         <div className={styles.controlGroup}>

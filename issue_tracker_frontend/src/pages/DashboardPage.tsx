@@ -8,6 +8,7 @@ import {
   FormControl,
   Dropdown,
   DropdownButton,
+  Spinner,
 } from "react-bootstrap";
 import styles from "./DashboardPage.module.css";
 import { Project } from "../interfaces/interfaces";
@@ -21,11 +22,14 @@ const DashboardPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const fetchProjects = async () => {
+      setLoading(true); // Set loading to true before fetching
       const response = await getProjects();
       setProjects(response.data);
+      setLoading(false); // Set loading to false after fetching
     };
     fetchProjects();
   }, []);
@@ -88,7 +92,13 @@ const DashboardPage: React.FC = () => {
           </Button>
         </div>
       </div>
-      <ProjectList projects={filteredProjects} />
+      {loading ? (
+        <div className="text-center">
+          <Spinner animation="border" />
+        </div>
+      ) : (
+        <ProjectList projects={filteredProjects} />
+      )}
     </div>
   );
 };

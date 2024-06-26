@@ -49,10 +49,11 @@ class IssueViewSet(mixins.DestroyModelMixin,
     def get_queryset(self):
         """Retrieve issues for authenticated user."""
         queryset = self.queryset
-        user = self.request.user
-        queryset = queryset.filter(
-            created_by__id=user.id
-        )
+        if self.action == 'list':
+            user = self.request.user
+            queryset = queryset.filter(
+                created_by__id=user.id
+            )
         return queryset.order_by('-id')
 
     @action(methods=['GET', 'POST'], detail=True, url_path='comments')

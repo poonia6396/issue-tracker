@@ -81,6 +81,23 @@ class PrivateIssueApiTests(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
+    def test_get_issue_detail_not_self_created(self):
+        """
+        Test get issue detail that is not
+        created by the authenticated user.
+        """
+
+        user2 = create_user(email='user1@example.com')
+        issue = create_issue(user=user2, project=self.project)
+
+        url = detail_url(issue.id)
+        res = self.client.get(url)
+
+        serializer = IssueDetailSerializer(issue)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
+
     def test_create_label_on_update(self):
         """Test create label when updating a issue."""
         issue = create_issue(user=self.user, project=self.project)
