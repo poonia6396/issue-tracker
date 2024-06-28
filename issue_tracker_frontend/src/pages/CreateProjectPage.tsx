@@ -1,4 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
+import { Spinner } from "react-bootstrap";
 import { createProject } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import styles from "./CreateProjectPage.module.css";
@@ -6,6 +7,7 @@ import styles from "./CreateProjectPage.module.css";
 const CreateProjectPage: React.FC = () => {
   const [projectName, setProjectName] = useState("");
   const history = useNavigate();
+  const [loading, setLoading] = useState(true); 
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setProjectName(e.target.value);
@@ -14,7 +16,9 @@ const CreateProjectPage: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
+      setLoading(true);
       await createProject({ name: projectName });
+      setLoading(false);
       history("/dashboard");
     } catch (error) {
       console.error("Create project failed", error);
@@ -22,6 +26,12 @@ const CreateProjectPage: React.FC = () => {
   };
 
   return (
+    <div className="login-container">
+      {loading && (
+        <div className={`${styles.overlay} ${loading ? styles["fade-in"] : styles.hidden}`}>
+          <Spinner animation="border" variant="primary" />
+        </div>
+      )}
     <div className={styles.container}>
       <h1 className={styles.title}>Create Project</h1>
       <form onSubmit={handleSubmit} className={styles.form}>
@@ -36,6 +46,7 @@ const CreateProjectPage: React.FC = () => {
           Create
         </button>
       </form>
+    </div>
     </div>
   );
 };

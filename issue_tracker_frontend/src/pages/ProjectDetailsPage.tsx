@@ -19,7 +19,7 @@ import {
   ListGroup,
   Modal,
   Form,
-  Dropdown,
+  Spinner,
 } from "react-bootstrap";
 import { FaUserPlus, FaUserMinus, FaEdit } from "react-icons/fa";
 import styles from "./ProjectDetailsPage.module.css";
@@ -33,10 +33,12 @@ const ProjectDetailsPage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
+        setLoading(true); 
         const projectResponse = await getProject(Number(projectId));
         const membersResponse = await getProjectMemberships(Number(projectId));
         setProject({
@@ -45,6 +47,7 @@ const ProjectDetailsPage: React.FC = () => {
         });
         setEditedTitle(projectResponse.data.name);
         setEditedDescription(projectResponse.data.description);
+        setLoading(false); 
       } catch (error) {
         console.error("Failed to fetch project", error);
       }
@@ -67,6 +70,7 @@ const ProjectDetailsPage: React.FC = () => {
 
   const handleAddMembers = async (email: string, role: string) => {
     try {
+      setLoading(true); 
       await addProjectMember(Number(projectId), { email, role });
       const membersResponse = await getProjectMemberships(Number(projectId));
       setProject(
@@ -74,6 +78,7 @@ const ProjectDetailsPage: React.FC = () => {
           prevProject && { ...prevProject, memberships: membersResponse.data }
       );
       setIsModalOpen(false);
+      setLoading(false); 
     } catch (error) {
       console.error("Failed to add member", error);
     }
@@ -98,6 +103,12 @@ const ProjectDetailsPage: React.FC = () => {
   );
 
   return (
+    <div className="login-container">
+      {loading && (
+        <div className={`${styles.overlay} ${loading ? styles["fade-in"] : styles.hidden}`}>
+          <Spinner animation="border" variant="primary" />
+        </div>
+      )}
     <Container className={styles.container}>
       {project && (
         <>
@@ -180,6 +191,7 @@ const ProjectDetailsPage: React.FC = () => {
         </>
       )}
     </Container>
+    </div>
   );
 };
 
