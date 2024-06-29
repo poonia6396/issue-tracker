@@ -14,7 +14,7 @@ import {
   updateIssueDueDate,
 } from "../api/api";
 import { useParams } from "react-router-dom";
-import { Container, Button } from "react-bootstrap";
+import { Container, Button, Spinner } from "react-bootstrap";
 import { User, Issue, Comment } from "../interfaces/interfaces";
 import IssueDetails from "../components/IssueDetails";
 import IssueSidePanel from "../components/IssueSidePanel";
@@ -29,11 +29,14 @@ const IssueDetailsPage: React.FC = () => {
   const [newLabel, setNewLabel] = useState("");
   const [projectMembers, setProjectMembers] = useState<User[]>([]);
   const [newAssignee, setNewAssignee] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchIssueDetails = async () => {
+      setLoading(true); 
       const response = await getIssueDetails(Number(issueId));
       setIssue(response.data);
+      setLoading(false); 
     };
 
     const fetchComments = async () => {
@@ -160,7 +163,14 @@ const IssueDetailsPage: React.FC = () => {
     }
   };
 
-  if (!issue) return <div>Loading...</div>;
+  if (!issue) {
+    return (
+      <div className={`${styles.overlay} ${loading ? styles["fade-in"] : styles.hidden}`}>
+        <Spinner animation="border" variant="primary" />
+      </div>
+      );
+  }
+    
 
   return (
     <Container className={styles.container}>

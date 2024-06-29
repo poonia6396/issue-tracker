@@ -20,12 +20,19 @@ const LoginPage: React.FC = () => {
       localStorage.setItem("refresh_token", refresh);
       setToken(access);
 
-      const response = await getUser();
-      setUser(response.data);
-
-      setTimeout(() => {
-        navigate("/dashboard"); // or any other route
-      }, 500); // Delay to show the spinner a bit longer
+      setTimeout(async () => {
+        try {
+          const response = await getUser();
+          setUser(response.data);
+  
+          navigate("/dashboard"); // or any other route
+        } catch (error) {
+          console.error("Fetching user failed", error);
+        } finally {
+          setLoading(false); // Hide spinner
+        }
+      }, 0);
+       // Delay to show the spinner a bit longer
     } catch (error) {
       console.error("Login failed", error);
       setLoading(false); // Hide spinner if login fails
