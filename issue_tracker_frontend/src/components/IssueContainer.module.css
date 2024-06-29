@@ -1,0 +1,13 @@
+.issueCard {
+  height: 150px; /* Adjust this value as needed */
+  overflow: hidden;
+}
+
+.issueDescription {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 60px; /* Adjust this value as needed to fit the desired number of lines */
+}

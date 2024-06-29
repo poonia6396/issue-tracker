@@ -27,19 +27,12 @@ const CreateIssuePage: React.FC = () => {
   };
 
   return (
-    <div className="login-container">
-      {loading && (
-        <div className={`${styles.overlay} ${loading ? styles["fade-in"] : styles.hidden}`}>
-          <Spinner animation="border" variant="primary" />
-        </div>
-      )}
     <div className={styles.container}>
       <h1 className={styles.title}>Create Issue</h1>
       <CreateIssueForm
         onSubmit={handleCreateIssue}
         projectId={Number(projectId)}
       />
-    </div>
     </div>
   );
 };

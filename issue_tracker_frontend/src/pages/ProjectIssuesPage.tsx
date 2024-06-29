@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getIssuesForProject, getProjectMembers } from "../api/api";
 import IssueContainer from "../components/IssueContainer";
+import Select from 'react-select';
 import {
   Container,
   Row,
@@ -13,7 +14,9 @@ import {
   Pagination,
   Button,
   Form,
-  Spinner
+  Spinner,
+  ToggleButtonGroup,
+  ToggleButton
 } from "react-bootstrap";
 import { Issue, Label, User } from "../interfaces/interfaces";
 import styles from "./ProjectIssuesPage.module.css";
@@ -22,15 +25,16 @@ const ProjectIssues: React.FC = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const [issues, setIssues] = useState<Issue[]>([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedLabels, setSelectedLabels] = useState<number[]>([]);
   const [selectedAssignees, setSelectedAssignees] = useState<number[]>([]);
-  const [labels, setLabels] = useState<Label[]>([]);
+  const [labels, setLabels] = useState<string[]>([]);
   const [members, setMembers] = useState<User[]>([]);
+  const [issueStatus, setIssueStatus] = useState("Open"); // Add state for issue status
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -53,24 +57,25 @@ const ProjectIssues: React.FC = () => {
   }, [projectId, selectedLabels, selectedAssignees]);
 
   useEffect(() => {
-    const fetchLabelsAndMembers = async () => {
+    const fetchMembers = async () => {
       if (projectId) {
-        // Replace with actual API calls to fetch labels and members
-        //const labelsResponse = await getLabelsForProject(Number(projectId));
         const membersResponse = await getProjectMembers(Number(projectId));
-        //setLabels(labelsResponse.data);
         setMembers(membersResponse.data);
       }
     };
-    fetchLabelsAndMembers();
+    fetchMembers();
   }, [projectId]);
 
-  const handleLabelChange = (labelId: number) => {
-    setSelectedLabels((prevLabels) =>
-      prevLabels.includes(labelId)
-        ? prevLabels.filter((id) => id !== labelId)
-        : [...prevLabels, labelId]
-    );
+  useEffect(() => {
+    const uniqueLabels = new Set<string>();
+    issues.forEach(issue => {
+      issue.labels.forEach(label => uniqueLabels.add(label.name));
+    });
+    setLabels(Array.from(uniqueLabels));
+  }, [issues]);
+
+  const handleLabelChange = (selectedOptions: any) => {
+    setSelectedLabels(selectedOptions.map((option: any) => option.value));
   };
 
   const handleAssigneeChange = (assigneeId: number) => {
@@ -85,8 +90,9 @@ const ProjectIssues: React.FC = () => {
     return issues
       .filter(
         (issue) =>
-          issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          issue.description.toLowerCase().includes(searchTerm.toLowerCase())
+          (issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            issue.description.toLowerCase().includes(searchTerm.toLowerCase())) &&
+          (issueStatus === "all" || issue.status === issueStatus)
       )
       .sort((a, b) => {
         if (sortBy === "date") {
@@ -106,7 +112,7 @@ const ProjectIssues: React.FC = () => {
         }
         return 0;
       });
-  }, [issues, searchTerm, sortBy, sortOrder]);
+  }, [issues, searchTerm, sortBy, sortOrder, issueStatus]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -173,18 +179,11 @@ const ProjectIssues: React.FC = () => {
       <Row className="mb-4">
         <Col md={6}>
           <h5>Filter by Labels</h5>
-          <Form>
-            {labels.map((label) => (
-              <Form.Check
-                key={label.id}
-                type="checkbox"
-                id={`label-${label.id}`}
-                label={label.name}
-                checked={selectedLabels.includes(label.id)}
-                onChange={() => handleLabelChange(label.id)}
-              />
-            ))}
-          </Form>
+          <Select
+            isMulti
+            options={labels.map(label => ({ value: label, label: label }))}
+            onChange={handleLabelChange}
+          />
         </Col>
         <Col md={6}>
           <h5>Filter by Assignees</h5>
@@ -200,6 +199,27 @@ const ProjectIssues: React.FC = () => {
               />
             ))}
           </Form>
+        </Col>
+      </Row>
+      <Row className="mb-4">
+        <Col>
+          <h5>Filter by Status</h5>
+          <ToggleButtonGroup
+            type="radio"
+            name="status"
+            value={issueStatus}
+            onChange={(val) => setIssueStatus(val)}
+          >
+            <ToggleButton id="status-open" value="Open">
+              Open
+            </ToggleButton>
+            <ToggleButton id="status-closed" value="Closed">
+              Closed
+            </ToggleButton>
+            <ToggleButton id="status-all" value="all">
+              All
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Col>
       </Row>
       <Row>
