@@ -6,7 +6,6 @@ import {
   addProjectMember,
   removeProjectMember,
   updateProject,
-  getIssuesForProject,
 } from "../api/api";
 import { Project, Label, User } from "../interfaces/interfaces";
 import AddMembersModal from "../components/AddMembersModal";

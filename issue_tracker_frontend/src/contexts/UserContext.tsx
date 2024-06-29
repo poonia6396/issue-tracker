@@ -14,25 +14,8 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem("access_token"));
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (token) {
-        try {
-          const response = await getUser(); // Use the token to fetch user details
-          setUser(response.data);
-        } catch (error) {
-          console.error("Failed to fetch user details", error);
-          setToken(null);
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("refresh_token");
-        }
-      }
-      setLoading(false);
-    };
-    fetchUser();
-  }, [token]);
+
 
   useEffect(() => {
     if (token) {
@@ -44,7 +27,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   return (
     <UserContext.Provider value={{ user, setUser, token, setToken }}>
-      {!loading && children}
+      {children}
     </UserContext.Provider>
   );
 };

@@ -12,11 +12,8 @@ import {
 } from "react-bootstrap";
 import styles from "./DashboardPage.module.css";
 import { Project } from "../interfaces/interfaces";
-import { useUser } from "../contexts/UserContext";
 
 const DashboardPage: React.FC = () => {
-  const { user } = useUser();
-  const firstNameLetter = user ? user.email.charAt(0).toUpperCase() : "";
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
