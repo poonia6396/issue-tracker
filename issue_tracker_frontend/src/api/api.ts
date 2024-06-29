@@ -45,7 +45,7 @@ export const getIssuesForProject = (projectId: number, labels?: number[], assign
     params.append('labels', labels.join(','));
   }
   if (assignees && assignees.length) {
-    params.append('assignees', assignees.join(','));
+    params.append('assigned_to', assignees.join(','));
   }
   return axiosInstance.get(`/projects/${projectId}/issues?${params.toString()}`);
 };

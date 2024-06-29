@@ -199,7 +199,7 @@ class ProjectIssuesAPITest(APITestCase):
         payload = {
             'title': 'Sample issue title',
             'description': 'Sample description',
-            'status': 'New',
+            'status': 'Open',
             'priority': 'Low',
             'assigned_to_id': self.user.id,
         }
@@ -219,7 +219,7 @@ class ProjectIssuesAPITest(APITestCase):
         payload = {
             'title': 'Sample issue title',
             'description': 'Sample description',
-            'status': 'New',
+            'status': 'Open',
             'priority': 'Low',
             'assigned_to_id': 1,
             'labels': [
@@ -246,7 +246,7 @@ class ProjectIssuesAPITest(APITestCase):
         payload = {
             'title': 'Sample issue title',
             'description': 'Sample description',
-            'status': 'New',
+            'status': 'Open',
             'priority': 'Low',
             'assigned_to_id': 1,
             'labels': [

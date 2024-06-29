@@ -1,9 +1,9 @@
-// src/components/IssueContainer.tsx
 import React from "react";
 import { Card, Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { FaExclamationCircle } from "react-icons/fa";
 import { Issue } from "../interfaces/interfaces";
+import styles from "./IssueContainer.module.css"; // Import the CSS module
 
 interface IssueContainerProps {
   issue: Issue;
@@ -50,7 +50,7 @@ const IssueContainer: React.FC<IssueContainerProps> = ({ issue }) => {
 
   return (
     <Card
-      className="mb-3 shadow-sm"
+      className={`mb-3 shadow-sm ${styles.issueCard}`}
       style={{ cursor: "pointer" }}
       onClick={handleClick}
     >
@@ -61,7 +61,9 @@ const IssueContainer: React.FC<IssueContainerProps> = ({ issue }) => {
             {issue.priority}
           </Badge>
         </div>
-        <Card.Text className="text-muted mb-2">{issue.description}</Card.Text>
+        <Card.Text className={`text-muted mb-2 ${styles.issueDescription}`}>
+          {issue.description}
+        </Card.Text>
         <div className="d-flex justify-content-between align-items-center">
           <Badge bg={getStatusVariant(issue.status)}>{issue.status}</Badge>
           <FaExclamationCircle className="text-muted" />
