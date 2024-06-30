@@ -7,7 +7,7 @@ import {
   removeProjectMember,
   updateProject,
 } from "../api/api";
-import { Project, Label, User } from "../interfaces/interfaces";
+import { Project } from "../interfaces/interfaces";
 import AddMembersModal from "../components/AddMembersModal";
 import {
   Badge,

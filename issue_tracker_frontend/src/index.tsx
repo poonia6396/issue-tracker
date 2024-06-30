@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { UserProvider } from "./contexts/UserContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App";
+import { ErrorProvider } from './contexts/ErrorContext';
 import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(
@@ -10,9 +11,11 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
+    <ErrorProvider>
     <UserProvider>
       <App />
     </UserProvider>
+    </ErrorProvider>
   </React.StrictMode>
 );
 

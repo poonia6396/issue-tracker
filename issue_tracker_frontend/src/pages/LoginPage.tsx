@@ -1,41 +1,38 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, ErrorResponse } from "react-router-dom";
 import { loginUser, getUser } from "../api/api";
 import { useUser } from "../contexts/UserContext";
-import { Form, Button, Spinner } from "react-bootstrap";
+import { useError } from '../contexts/ErrorContext';
+import { Form, Button, Spinner, Alert } from "react-bootstrap";
 import styles from "./LoginPage.module.css";
+import { AxiosError } from "axios";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { setUser, setToken } = useUser();
+  const { error, setError } = useError();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null); // Clear any previous errors
+
     try {
       const { access, refresh } = await loginUser(email, password);
-      localStorage.setItem("refresh_token", refresh);
+      localStorage.setItem('refresh_token', refresh);
       setToken(access);
 
-      setTimeout(async () => {
-        try {
-          const response = await getUser();
-          setUser(response.data);
-  
-          navigate("/dashboard"); // or any other route
-        } catch (error) {
-          console.error("Fetching user failed", error);
-        } finally {
-          setLoading(false); // Hide spinner
-        }
-      }, 0);
-       // Delay to show the spinner a bit longer
+      const response = await getUser();
+      setUser(response.data);
+
+      navigate('/dashboard'); // or any other route
     } catch (error) {
-      console.error("Login failed", error);
-      setLoading(false); // Hide spinner if login fails
+      setError(error as AxiosError);
+    } finally {
+      setLoading(false); // Hide spinner
     }
   };
 
@@ -45,6 +42,11 @@ const LoginPage: React.FC = () => {
         <div className={`${styles.overlay} ${loading ? styles["fade-in"] : styles.hidden}`}>
           <Spinner animation="border" variant="primary" />
         </div>
+      )}
+      {error && (
+        <Alert variant="danger">
+          {'An error occurred. Please try again.'}
+        </Alert>
       )}
       <h2>Login</h2>
       <Form onSubmit={handleSubmit}>
