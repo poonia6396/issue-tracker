@@ -30,13 +30,16 @@ jobs:
         pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements.dev.txt
+      working-directory: ./issue_tracker
 
     - name: Run linting
       run: |
         source venv/bin/activate
         flake8 .
+      working-directory: ./issue_tracker
 
     - name: Run unit tests
       run: |
         source venv/bin/activate
         python manage.py test
+      working-directory: ./issue_tracker
