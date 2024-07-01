@@ -3,7 +3,6 @@ Views for the user API.
 """
 from rest_framework import generics, permissions
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.settings import api_settings
 
 # Create your views here.
 from user.serializers import (

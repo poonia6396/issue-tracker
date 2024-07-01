@@ -1,21 +1,45 @@
-# ---
-# name: Checks
+# .github/workflows/ci.yml
+name: CI Pipeline
 
-# on: [push]
+on:
+  pull_request:
+    branches:
+      - main
 
-# jobs:
-#   test-lint:
-#     name: Test and Lint
-#     runs-on: ubuntu-20.04
-#     steps:
-#       - name: Login to Docker Hub
-#         uses: docker/login-action@v3
-#         with:
-#           username: ${{ secrets.DOCKERHUB_USER }}
-#           password: ${{ secrets.DOCKERHUB_TOKEN }}
-#       - name: Checkout
-#         uses: actions/checkout@v4
-#       - name: Test
-#         run: docker-compose run --rm issue_tracker sh -c "python manage.py wait_for_db && python manage.py test"
-#       - name: Lint
-#         run: docker-compose run --rm issue_tracker sh -c "flake8"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      ENVIRONMENT: test
+      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements.dev.txt
+      working-directory: ./issue_tracker
+
+    - name: Run linting
+      run: |
+        source venv/bin/activate
+        flake8 .
+      working-directory: ./issue_tracker
+
+    - name: Run unit tests
+      run: |
+        source venv/bin/activate
+        python manage.py test
+      working-directory: ./issue_tracker

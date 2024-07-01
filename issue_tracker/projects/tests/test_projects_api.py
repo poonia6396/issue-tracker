@@ -106,7 +106,7 @@ class ProjectMembersAPITest(APITestCase):
     """Test members api for the projects"""
 
     def setUp(self):
-        
+
         # Create users
         self.user1 = create_user(email='user1@example.com')
         self.user2 = create_user(email='user2@example.com')
@@ -114,10 +114,6 @@ class ProjectMembersAPITest(APITestCase):
         # Create a project
         self.project = create_project(user=self.user1)
         self.client.force_authenticate(user=self.user1)
-        # Create ProjectMembership
-        self.membership = ProjectMembership.objects.create(
-            user=self.user1, project=self.project, role='owner'
-        )
 
     def test_list_project_members(self):
         """Test listing project members"""

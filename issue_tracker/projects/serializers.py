@@ -41,4 +41,3 @@ class ProjectDetailSerializer(ProjectSerializer):
 
     class Meta(ProjectSerializer.Meta):
         fields = ProjectSerializer.Meta.fields + ['description']
-

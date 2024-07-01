@@ -10,6 +10,11 @@ export const loginUser = async (email: string, password: string ): Promise<Login
   return response.data;
 };
 
+export const refreshAccessToken = async (refreshToken: string): Promise<LoginResponse> => {
+  const response = await axiosInstance.post(`/user/token/refresh`, { refresh: refreshToken });
+  return response.data;
+};
+
 export const createUser = async (userData: { email: string, password: string, name: string }) => {
   const response = await axiosInstance.post("/user/create/", userData);
   return response.data;

@@ -16,7 +16,7 @@ class LabelSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(required=False, read_only=True)
-    
+
     class Meta:
         model = Comment
         fields = ['id', 'created_by', 'text', 'created_at']
