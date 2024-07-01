@@ -18,7 +18,7 @@ import {
   ToggleButtonGroup,
   ToggleButton
 } from "react-bootstrap";
-import { Issue, Label, User } from "../interfaces/interfaces";
+import { Issue, User } from "../interfaces/interfaces";
 import styles from "./ProjectIssuesPage.module.css";
 
 const ProjectIssues: React.FC = () => {
