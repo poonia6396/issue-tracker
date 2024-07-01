@@ -36,6 +36,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     def _is_admin_user(self, user, project):
         try:
+
             request_user_membership = ProjectMembership.objects.get(
                 user=user, project=project
             )

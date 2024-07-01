@@ -70,6 +70,9 @@ class ProjectMembership(models.Model):
     def __str__(self) -> str:
         return f"{self.user.email} is a member of {self.project.name}"
 
+    class Meta:
+        unique_together = ('user', 'project')
+
 
 class Label(models.Model):
     name = models.CharField(max_length=50)
