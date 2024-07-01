@@ -11,6 +11,8 @@ WORKDIR /issue_tracker
 ENV PORT 8000
 EXPOSE 8000
 
+RUN echo $DB_PASSWORD
+
 ARG DEV=false
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
