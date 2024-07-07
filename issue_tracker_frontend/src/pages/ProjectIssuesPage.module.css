@@ -73,3 +73,7 @@
 .fade-in {
   opacity: 1;
 }
+
+.labelsFilter {
+  z-index: 2;
+}

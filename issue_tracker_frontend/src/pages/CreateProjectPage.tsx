@@ -7,7 +7,7 @@ import styles from "./CreateProjectPage.module.css";
 const CreateProjectPage: React.FC = () => {
   const [projectName, setProjectName] = useState("");
   const history = useNavigate();
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(false); 
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setProjectName(e.target.value);
