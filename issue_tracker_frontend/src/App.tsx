@@ -29,7 +29,6 @@ const App: React.FC = () => {
     <Router>
       <CustomNavbar />
       <Container style={{ marginTop: "70px" }}>
-        <CustomBreadcrumbs />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />

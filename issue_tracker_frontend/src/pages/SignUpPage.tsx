@@ -1,8 +1,9 @@
 // src/pages/SignUpPage.tsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { createUser } from "../api/api";
 import { Form, Button } from "react-bootstrap";
+import styles from "./SignUpPage.module.css";
 
 const SignUpPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -22,42 +23,44 @@ const SignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="signup-container">
-      <h2>Sign Up</h2>
-      <Form onSubmit={handleSubmit}>
+    <div className={`${styles.signup}`}>
+      <Form onSubmit={handleSubmit} className={`${styles.signupContainer}`}>
+        <h3>Sign Up</h3>
         <Form.Group controlId="formBasicName">
-          <Form.Label>Name</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter name"
             value={name}
+            className={`${styles.signupFields}`}
             onChange={(e) => setName(e.target.value)}
           />
         </Form.Group>
 
         <Form.Group controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
           <Form.Control
             type="email"
             placeholder="Enter email"
             value={email}
+            className={`${styles.signupFields}`}
             onChange={(e) => setEmail(e.target.value)}
           />
         </Form.Group>
 
         <Form.Group controlId="formBasicPassword">
-          <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Password"
+            placeholder="Enter password"
             value={password}
+            className={`${styles.signupFields}`}
             onChange={(e) => setPassword(e.target.value)}
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit">
+        <Button variant="primary" type="submit" className={`${styles.signupFields}`}>
           Sign Up
         </Button>
+        <br />
+        <div className={`${styles.signupFields}`}>Have an account? <Link to="/login">Login</Link></div>
       </Form>
     </div>
   );
