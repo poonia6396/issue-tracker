@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { getProjectMembers } from "../api/api";
 import { User } from "../interfaces/interfaces";
 import styles from "./CreateIssueForm.module.css";
+import { IconButton } from '@mui/material';
+import { AddCircle } from '@mui/icons-material';
 
 interface CreateIssueFormProps {
   projectId: number;
@@ -111,15 +113,10 @@ const CreateIssueForm: React.FC<CreateIssueFormProps> = ({
           type="text"
           value={labelInput}
           onChange={(e) => setLabelInput(e.target.value)}
-          className={styles.input}
+          className={`${styles.input} ${styles.labelInput}`}
         />
-        <button
-          type="button"
-          onClick={handleAddLabel}
-          className={styles.addButton}
-        >
-          Add Label
-        </button>
+        <IconButton onClick={handleAddLabel} className={styles.addButton}><AddCircle sx={{ color: '#007bff', fontSize: 'larger', marginRight: '0px' }} /></IconButton>
+
       </div>
       <button type="submit" className={styles.submitButton}>
         Create Issue

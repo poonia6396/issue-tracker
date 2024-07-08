@@ -66,10 +66,10 @@ const IssueSidePanel: React.FC<IssueSidePanelProps> = ({
           <strong>Due date:</strong>{" "}
           {isIssueOpen ? (
             <DatePicker
+              className={`${styles.dueDate} form-control` }
               selected={issue.due_date}
               onChange={(date: Date | null) => onUpdateDueDate(date)}
               dateFormat="yyyy-MM-dd"
-              className="form-control"
             />
           ) : issue.due_date ? (
             new Date(issue.due_date).toLocaleDateString()

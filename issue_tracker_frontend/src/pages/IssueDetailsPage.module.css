@@ -12,6 +12,8 @@
 }
 
 .sidePanel {
+  margin-top: 42px;
+  margin-left: 18px;
   flex: 1;
   padding: 20px;
   background-color: #f8f9fa;
@@ -124,4 +126,8 @@
 
 .fade-in {
   opacity: 1;
+}
+
+.dueDate {
+  z-index: 2;
 }
