@@ -27,10 +27,10 @@ if ENVIRONMENT == 'test':
     DEBUG = True
 
 ALLOWED_HOSTS = [
-    'issue-tracker-backend-1094772332180-us-central1.run.app',
+    'issue-tracker-backend-1094772332180.us-central1.run.app',
     '127.0.0.1',
     'localhost',
-    'issue-tracker-frontend-1094772332180-us-central1.run.app',
+    'issue-tracker-frontend-1094772332180.us-central1.run.app',
 ]
 
 
@@ -159,8 +159,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.User'
 
 CORS_ALLOWED_ORIGINS = [
-    'https://issue-tracker-frontend-1094772332180-us-central1.run.app',
-    'https://issue-tracker-backend-1094772332180-us-central1.run.app',
+    'https://issue-tracker-frontend-1094772332180.us-central1.run.app',
+    'https://issue-tracker-backend-1094772332180.us-central1.run.app',
     'http://localhost:8080'
 ]
 
@@ -168,7 +168,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://issue-tracker-backend-1094772332180-us-central1.run.app',
+    'https://issue-tracker-backend-1094772332180.us-central1.run.app',
 ]
 
 REST_FRAMEWORK = {
