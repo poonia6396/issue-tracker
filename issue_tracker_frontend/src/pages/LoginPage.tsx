@@ -48,36 +48,39 @@ const LoginPage: React.FC = () => {
           {'An error occurred. Please try again.'}
         </Alert>
       )}
-      <h2>Login</h2>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Group>
+      <div className={`${styles.login}`}>
+        
+        <Form onSubmit={handleSubmit} className={`${styles.loginContainer}`}>
+          {/* <div className={`${styles.heading}`}>Login</div> */}
+          <h3>Login</h3>
+          <Form.Group controlId="formBasicEmail">
+            {/*<Form.Label>Email address</Form.Label>*/}
+            <Form.Control
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              className={`${styles.loginFields}`}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Group>
 
-        <Form.Group controlId="formBasicPassword">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Group>
+          <Form.Group controlId="formBasicPassword">
+            {/*<Form.Label>Password</Form.Label>*/}
+            <Form.Control
+              className={`${styles.loginFields}`}
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Group>
 
-        <Button variant="primary" type="submit">
-          Login
-        </Button>
-      </Form>
-      <div className="mt-3">
-        <p>
-          Don't have an account? <Link to="/signup">Sign Up</Link>
-        </p>
+          <Button variant="primary" type="submit" className={`${styles.loginBtn}`}>
+            Login
+          </Button>
+          <br />
+          <div className={`${styles.loginFields}`}>Don't have an account? <Link to="/signup">Sign Up</Link></div>
+        </Form>
       </div>
     </div>
   );

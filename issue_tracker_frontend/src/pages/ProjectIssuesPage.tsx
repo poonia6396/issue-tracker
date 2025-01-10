@@ -35,7 +35,7 @@ const ProjectIssues: React.FC = () => {
   const [labels, setLabels] = useState<string[]>([]);
   const [members, setMembers] = useState<User[]>([]);
   const [issueStatus, setIssueStatus] = useState("Open"); // Add state for issue status
-  const itemsPerPage = 10;
+  const itemsPerPage = 9;
 
   useEffect(() => {
     const fetchIssues = async () => {
@@ -180,6 +180,7 @@ const ProjectIssues: React.FC = () => {
         <Col md={6}>
           <h5>Filter by Labels</h5>
           <Select
+            className={`${styles.labelsFilter}`}
             isMulti
             options={labels.map(label => ({ value: label, label: label }))}
             onChange={handleLabelChange}
