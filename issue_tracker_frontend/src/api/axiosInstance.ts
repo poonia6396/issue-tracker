@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { useError } from '../contexts/ErrorContext'; // Import your Error Context
 
 const API_URL = process.env.REACT_APP_API_URL;

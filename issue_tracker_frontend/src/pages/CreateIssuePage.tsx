@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createIssue } from "../api/api";
-import { Spinner } from "react-bootstrap";
 import CreateIssueForm from "../components/CreateIssueForm";
 import styles from "./CreateIssuePage.module.css";
 
